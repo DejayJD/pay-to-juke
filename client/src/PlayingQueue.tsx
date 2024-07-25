@@ -40,7 +40,7 @@ export const PlayingQueue = () => {
             <Avatar
               src={currentTrack.user.profilePicture?._150x150}
               size='xl'
-              css={{ position: 'absolute', bottom: 60, left: -25 }}
+              css={{ position: 'absolute', bottom: 50, left: -25 }}
             />
             <Text
               size='m'
