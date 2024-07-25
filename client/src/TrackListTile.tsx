@@ -6,10 +6,8 @@ import { AppContext } from './AppContext'
 type TrackListTileProps = { track: TrackFull }
 
 export const TrackListTile = ({ track }: TrackListTileProps) => {
-  const { playingQueue, setPlayingQueue } = useContext(AppContext)!
-  const addTrackToQueue = () => {
-    setPlayingQueue([...playingQueue, track])
-  }
+  const { addTrackToQueue } = useContext(AppContext)!
+
   return (
     <Flex gap='l' w={500}>
       <Paper w={150} h={150} css={{ flexShrink: 0 }}>
@@ -30,7 +28,12 @@ export const TrackListTile = ({ track }: TrackListTileProps) => {
             @{track.user.handle}
           </Text>
         </Flex>
-        <Button fullWidth onClick={addTrackToQueue}>
+        <Button
+          fullWidth
+          onClick={() => {
+            addTrackToQueue(track)
+          }}
+        >
           Add
         </Button>
       </Flex>

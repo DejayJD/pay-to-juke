@@ -5,6 +5,7 @@ import { Flex } from '@audius/harmony'
 import { PlayingQueue } from './PlayingQueue'
 import { TrackSearch } from './TrackSearch'
 import { AppContextProvider } from './AppContext'
+import { WebSocketListener } from './WebSocketListener'
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -48,6 +49,7 @@ export default function App() {
           </Flex>
           <PlayingQueue />
           <TrackSearch />
+          <WebSocketListener />
         </Flex>
         {/* <audio
         css={{ display: 'none' }}

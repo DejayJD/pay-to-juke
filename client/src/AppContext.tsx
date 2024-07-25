@@ -1,25 +1,69 @@
-import { createContext, PropsWithChildren, useState } from 'react'
+import { createContext, PropsWithChildren, useRef, useState } from 'react'
+
+import { ClientQueueRequestEvent, ClientSocketMessage } from '../../types'
 
 import { TrackFull } from './types'
 
 // Define the initial state of the context
 type AppContextState = {
   // Add your state properties here
-  playingQueue: TrackFull[]
+  queue: TrackFull[]
   queueHistory: TrackFull[]
-  setPlayingQueue: (queue: TrackFull[]) => void
+  currentTrack: TrackFull | null
+  setQueue: (queue: TrackFull[]) => void
   setQueueHistory: (queue: TrackFull[]) => void
+  setcurrentTrack: (song: TrackFull) => void
+  addTrackToQueue: (track: TrackFull) => void
+  websocket: WebSocket | null
+  setWebsocket: (ws: WebSocket) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
-  const [playingQueue, setPlayingQueue] = useState<TrackFull[]>([])
+  const [queue, setQueue] = useState<TrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<TrackFull[]>([])
+  const [currentTrack, setcurrentTrack] = useState<TrackFull | null>(null)
+
+  const webSocketRef = useRef<WebSocket>(null)
+
+  const setWebsocket = (ws: WebSocket) => {
+    // @ts-expect-error - too lazy to cast useRef to mutable ref type shit
+
+    webSocketRef.current = ws
+  }
+
+  const addTrackToQueue = (track: TrackFull) => {
+    // TODO: do dope web3 shit here
+
+    const transactionHash = 'oawdnaiowudnaowudn127893'
+    // transaction is good to go now
+    const queueChangeData: ClientQueueRequestEvent = {
+      type: ClientSocketMessage.queueAddRequest,
+      hash: transactionHash,
+      trackId: track.id,
+      trackDurationS: track.duration
+    }
+
+    // Send to the server
+    if (webSocketRef?.current) {
+      webSocketRef?.current.send(JSON.stringify(queueChangeData))
+    }
+  }
 
   return (
     <AppContext.Provider
-      value={{ playingQueue, setPlayingQueue, queueHistory, setQueueHistory }}
+      value={{
+        queue,
+        setQueue,
+        queueHistory,
+        setQueueHistory,
+        websocket: webSocketRef?.current,
+        setWebsocket,
+        addTrackToQueue,
+        currentTrack,
+        setcurrentTrack
+      }}
     >
       {children}
     </AppContext.Provider>

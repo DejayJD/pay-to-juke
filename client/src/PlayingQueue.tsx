@@ -1,60 +1,54 @@
-import { Button, Flex } from '@audius/harmony'
+import { Flex, Text } from '@audius/harmony'
 import { TrackQueueTile } from './TrackQueueTile'
 import { AppContext } from './AppContext'
 import { useContext } from 'react'
 
 export const PlayingQueue = () => {
-  const { playingQueue, queueHistory, setPlayingQueue, setQueueHistory } =
-    useContext(AppContext)!
+  const { queue, queueHistory, currentTrack } = useContext(AppContext)!
 
-  const moveToHistory = () => {
-    const newHistoryQueue = [...queueHistory, playingQueue[0]]
-    const newPlayingQueue = playingQueue.slice(1)
-    setPlayingQueue(newPlayingQueue)
-    setQueueHistory(newHistoryQueue)
-  }
-
-  if (playingQueue.length === 0) {
-    return null
+  if (queue.length === 0 && queueHistory.length === 0 && !currentTrack) {
+    return <Text variant='title'>Queue something to start the jukebox!</Text>
   }
 
   return (
-    <Flex direction='column' w='80%' gap='2xl'>
+    <Flex
+      w='80%'
+      css={{ overflow: 'hidden' }}
+      gap='l'
+      justifyContent='space-between'
+    >
+      {/* History */}
       <Flex
-        w='100%'
-        css={{ overflow: 'hidden' }}
+        alignItems='center'
         gap='l'
-        justifyContent='space-between'
+        css={{ flexGrow: 1, flexBasis: 1, overflow: 'hidden' }}
+        justifyContent='flex-end'
       >
-        {/* History */}
-        <Flex
-          alignItems='center'
-          gap='l'
-          css={{ flexGrow: 1, flexBasis: 1, overflow: 'hidden' }}
-          justifyContent='flex-end'
-        >
-          {queueHistory.reverse().map((track, i) => (
-            <TrackQueueTile track={track} position={i + 1} isHistory />
-          ))}
-        </Flex>
-        {/* Playing */}
-        <Flex css={{ flexShrink: 0 }}>
-          <TrackQueueTile track={playingQueue[0]} position={0} />
-        </Flex>
-
-        {/* Upcoming queue */}
-        <Flex
-          alignItems='center'
-          gap='l'
-          css={{ flexGrow: 1, flexBasis: 1, overflow: 'hidden' }}
-        >
-          {playingQueue.map(
-            (track, i) =>
-              i !== 0 && <TrackQueueTile track={track} position={i} />
-          )}
-        </Flex>
+        {queueHistory.reverse().map((track, i) => (
+          <TrackQueueTile track={track} position={(i + 1) * -1} isHistory />
+        ))}
       </Flex>
-      <Button onClick={moveToHistory}>Shift Queue</Button>
+      {/* Currently Playing */}
+      <Flex css={{ flexShrink: 0 }}>
+        {currentTrack ? (
+          <TrackQueueTile track={currentTrack} position={0} />
+        ) : queue.length === 0 ? (
+          <Text> nothing to play </Text>
+        ) : (
+          <Flex> loading... </Flex>
+        )}
+      </Flex>
+
+      {/* Upcoming queue */}
+      <Flex
+        alignItems='center'
+        gap='l'
+        css={{ flexGrow: 1, flexBasis: 1, overflow: 'hidden' }}
+      >
+        {queue.map(
+          (track, i) => i !== 0 && <TrackQueueTile track={track} position={i} />
+        )}
+      </Flex>
     </Flex>
   )
 }
