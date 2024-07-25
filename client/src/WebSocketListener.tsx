@@ -20,7 +20,6 @@ function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
   setTimeout(function () {
     if (socket.readyState === 1) {
       if (callback != null) {
-        console.log('calling callback')
         callback()
       }
     } else {
@@ -42,12 +41,12 @@ export const WebSocketListener = () => {
 
   // initialize the websocket connection and our queue listeners
   useEffect(() => {
+    // need this so we dont react to rerenders
     if (websocket) return
     const ws = new WebSocket(LOCAL_WS_URL)
 
     setWebsocket(ws)
-    // Wait for the socket to connect then sync up with the server state
-    console.log('use effect triggered')
+    // Need to wait for the socket to connect then sync up with the server state
     waitForFirstSocketConnection(ws, () => {
       const initialSyncRequest: ClientSyncRequestEvent = {
         type: ClientSocketMessage.syncRequest
@@ -70,13 +69,6 @@ export const WebSocketListener = () => {
       const dedupedHistoryIds = uniq(unfetchedHistoryTrackIds)
 
       const allMissingTrackIds = [...dedupedHistoryIds, ...dedupedQueueIds]
-
-      console.log({
-        allMissingTrackIds,
-        unfetchedHistoryTrackIds,
-        queue,
-        history
-      })
 
       if (allMissingTrackIds.length === 0) return
 
@@ -137,7 +129,7 @@ export const WebSocketListener = () => {
     }
 
     ws.onmessage = socketMessageHandler
-  }, [setWebsocket])
+  }, [setQueue, setQueueHistory, setWebsocket, setcurrentTrack, websocket])
 
   return null
 }

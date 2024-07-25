@@ -8,7 +8,7 @@ import {
 } from '@audius/harmony'
 import { useState } from 'react'
 import { audiusSdk } from './audiusSdk'
-import { TrackListTile } from './TrackListTile'
+import { TrackSearchTile } from './TrackSearchTile'
 import { TrackFull } from './types'
 
 export const TrackSearch = () => {
@@ -20,7 +20,6 @@ export const TrackSearch = () => {
       query: searchText
     })
 
-    console.log({ tracks })
     setTracklist(tracks ?? [])
 
     // const trackFavorites = (tracks ?? []).reduce<Record<string, boolean>>(
@@ -34,25 +33,24 @@ export const TrackSearch = () => {
 
   return (
     <Flex direction='column' gap='s' mt='2xl'>
-      <Text>Enter a user handle to fetch their tracks:</Text>
-      <Flex gap='m'>
+      <Text color='default'>Search for a track to play</Text>
+      <Flex gap='m' w='500px'>
         <TextInput
           label='Get tracks for user handle:'
           size={TextInputSize.SMALL}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-        />
-        <IconButton
-          size='s'
-          icon={IconSearch}
-          aria-label='search'
-          onClick={searchTrack}
-          color='accent'
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              searchTrack()
+            }
+          }}
+          endIcon={IconSearch}
         />
       </Flex>
       <Flex direction='column' gap='l' mt='xl'>
         {tracklist.map((track) => (
-          <TrackListTile track={track} key={track.id} />
+          <TrackSearchTile track={track} key={track.id} />
         ))}
       </Flex>
     </Flex>

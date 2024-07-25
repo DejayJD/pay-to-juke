@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { ThemeProvider as HarmonyThemeProvider, Text } from '@audius/harmony'
+import { ThemeProvider as HarmonyThemeProvider } from '@audius/harmony'
 import { Flex } from '@audius/harmony'
 
 import { PlayingQueue } from './PlayingQueue'
 import { TrackSearch } from './TrackSearch'
 import { AppContextProvider } from './AppContext'
 import { WebSocketListener } from './WebSocketListener'
+
+import './App.css'
+import { Scrubber } from './Scrubber'
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -39,17 +42,15 @@ export default function App() {
   }, [isPlaying])
 
   return (
-    <HarmonyThemeProvider theme='day'>
+    <HarmonyThemeProvider theme='dark'>
       <AppContextProvider>
+        <WebSocketListener />
         <Flex direction='column' gap='m' m='2xl' alignItems='center'>
-          <Flex direction='column'>
-            <Text color='heading' strength='strong' variant='display'>
-              Jukebox
-            </Text>
-          </Flex>
           <PlayingQueue />
+          <Flex w='70%' mt='2xl'>
+            <Scrubber />
+          </Flex>
           <TrackSearch />
-          <WebSocketListener />
         </Flex>
         {/* <audio
         css={{ display: 'none' }}

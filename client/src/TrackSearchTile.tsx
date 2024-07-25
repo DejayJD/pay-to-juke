@@ -2,10 +2,11 @@ import { Button, Flex, Paper, Text } from '@audius/harmony'
 import { TrackFull } from './types'
 import { useContext } from 'react'
 import { AppContext } from './AppContext'
+import { getHrsMinsSecsText } from './utils'
 
-type TrackListTileProps = { track: TrackFull }
+type TrackSearchTileProps = { track: TrackFull }
 
-export const TrackListTile = ({ track }: TrackListTileProps) => {
+export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
   const { addTrackToQueue } = useContext(AppContext)!
 
   return (
@@ -26,6 +27,9 @@ export const TrackListTile = ({ track }: TrackListTileProps) => {
           </Text>
           <Text variant='body' color='default' size='s'>
             @{track.user.handle}
+          </Text>
+          <Text variant='body' color='default' size='s'>
+            {getHrsMinsSecsText(track.duration)}
           </Text>
         </Flex>
         <Button
