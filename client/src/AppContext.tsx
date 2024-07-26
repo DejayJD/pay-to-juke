@@ -1,4 +1,10 @@
-import { createContext, PropsWithChildren, useRef, useState } from 'react'
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useRef,
+  useState
+} from 'react'
 
 import { ClientQueueRequestEvent, ClientSocketMessage } from '../../types'
 
@@ -12,11 +18,13 @@ type AppContextState = {
   queue: TrackFull[]
   queueHistory: TrackFull[]
   websocket: WebSocket | null
+  audioPlayer: HTMLAudioElement | null
   addTrackToQueue: (track: TrackFull) => void
   setCurrentTrack: (song: TrackFull) => void
   setQueue: (queue: TrackFull[]) => void
   setQueueHistory: (queue: TrackFull[]) => void
   setWebsocket: (ws: WebSocket) => void
+  setAudioPlayer: (audioPlayer: HTMLAudioElement) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
@@ -27,11 +35,18 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
   const [currentTrack, setCurrentTrack] = useState<TrackFull | null>(null)
 
   const webSocketRef = useRef<WebSocket>(null)
+  const audioPlayerRef = useRef<HTMLAudioElement>(null)
 
-  const setWebsocket = (ws: WebSocket) => {
+  const setAudioPlayer = useCallback((audioPlayer: HTMLAudioElement) => {
+    // @ts-expect-error - too lazy to cast useRef to mutable ref type shit
+    
+    audioPlayerRef.current = audioPlayer
+  }, [])
+
+  const setWebsocket = useCallback((ws: WebSocket) => {
     // @ts-expect-error - too lazy to cast useRef to mutable ref type shit
     webSocketRef.current = ws
-  }
+  }, [])
 
   const addTrackToQueue = async (track: TrackFull) => {
     // todo: update balance
@@ -52,7 +67,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
       type: ClientSocketMessage.queueAddRequest,
       hash: transactionHash,
       trackId: track.id,
-      trackDurationS: track.duration,
+      trackDurationS: track.duration
     }
 
     // Send to the server
@@ -73,6 +88,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         addTrackToQueue,
         currentTrack,
         setCurrentTrack,
+        audioPlayer: audioPlayerRef?.current,
+        setAudioPlayer
       }}
     >
       {children}

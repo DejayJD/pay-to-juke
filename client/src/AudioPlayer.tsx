@@ -6,28 +6,32 @@ import { audiusSdk } from './audiusSdk'
 import { Scrubber } from './Scrubber'
 
 export const AudioPlayer = () => {
-  const { currentTrack } = useContext(AppContext)!
+  const { currentTrack, setAudioPlayer } = useContext(AppContext)!
   const [trackSrc, setTrackSrc] = useState<string | null>(null)
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  const handleCurrentTrackChange = useCallback(
-    async () => {
-      if (!currentTrack || !audioRef.current) return
-      console.log({ currentTrack })
+  const setAudioRef = (el: HTMLAudioElement | null) => {
+    if (!el) return
 
-      const url = await audiusSdk.tracks.streamTrack({
-        trackId: currentTrack.id
-      })
+    audioRef.current = el
+    setAudioPlayer(el)
+  }
 
-      // console.log('loading', { url })
-      setTrackSrc(url)
-      audioRef.current.load()
-      // TODO: Set the actual currentTime
-      // audioRef.current.currentTime = 100
-    },
-    [currentTrack]
-  )
+  const handleCurrentTrackChange = useCallback(async () => {
+    if (!currentTrack || !audioRef.current) return
+    console.log({ currentTrack })
+
+    const url = await audiusSdk.tracks.streamTrack({
+      trackId: currentTrack.id
+    })
+
+    // console.log('loading', { url })
+    setTrackSrc(url)
+    audioRef.current.load()
+    // TODO: Set the actual currentTime
+    // audioRef.current.currentTime = 100
+  }, [currentTrack])
 
   useEffect(() => {
     // console.log('CURRENT TRACK CHANGE', { currentTrack })
@@ -49,10 +53,16 @@ export const AudioPlayer = () => {
     <>
       <Flex w='70%' mt='2xl'>
         <Scrubber />
-        <Button onClick={() => { setIsMuted(val => !val) }}>{isMuted ? 'Unmute' : 'Mute'}</Button>
+        <Button
+          onClick={() => {
+            setIsMuted((val) => !val)
+          }}
+        >
+          {isMuted ? 'Unmute' : 'Mute'}
+        </Button>
       </Flex>
       <audio
-        ref={audioRef}
+        ref={(ref) => setAudioRef(ref)}
         css={{ display: 'none' }}
         src={trackSrc ?? undefined}
         autoPlay

@@ -12,7 +12,7 @@ export function Balance() {
 
     const interval = setInterval(() => {
       airdrop(pubkey).then((b) => {
-        console.log(address, b)
+        console.debug('Airdropped sol ', address, b)
         setBal(b)
       })
     }, 10 * 1000)

@@ -23,7 +23,9 @@ export const TrackQueueTile = ({ track, position }: TrackQueueTileProps) => {
       }}
       direction='column'
     >
-      <img src={track.artwork?.['_480x480']} alt={track.title} />
+      {track?.artwork?.['_480x480'] ? (
+        <img src={track?.artwork?.['_480x480']} alt={track.title} />
+      ) : null}
     </Paper>
   )
 }

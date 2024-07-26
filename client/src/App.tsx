@@ -9,6 +9,7 @@ import { WebSocketListener } from './WebSocketListener'
 import './App.css'
 import { AudioPlayer } from './AudioPlayer'
 import { Balance } from './Balance'
+import { Visualizer } from './visualizer/Visualizer'
 
 export default function App() {
   // /**
@@ -28,11 +29,12 @@ export default function App() {
     <HarmonyThemeProvider theme='dark'>
       <AppContextProvider>
         <WebSocketListener />
+        <Visualizer />
         <Flex direction='column' gap='m' m='2xl' alignItems='center'>
-          <Balance />
           <PlayingQueue />
           <AudioPlayer />
           <TrackSearch />
+          <Balance />
         </Flex>
       </AppContextProvider>
     </HarmonyThemeProvider>
