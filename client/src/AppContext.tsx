@@ -34,14 +34,12 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
   }
 
   const addTrackToQueue = async (track: TrackFull) => {
-    // todo: update balance
-    // todo: don't play track if insufficient balance
-    // also... disable the button if insufficient balance
-
     try {
       await payForPlay()
     } catch (e) {
-      console.log('payForPlay failed', e)
+      console.error('payment failed', e)
+      alert('payment failed')
+      return
     }
 
     // TODO: do dope web3 shit here
