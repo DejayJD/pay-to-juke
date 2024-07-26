@@ -90,7 +90,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         currentTrack,
         setCurrentTrack,
         audioPlayer: audioPlayerRef?.current,
-        setAudioPlayer
+        setAudioPlayer,
         currentTrackStartTime,
         setCurrentTrackStartTime
       }}

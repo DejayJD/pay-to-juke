@@ -30,6 +30,9 @@ let settings = {
 const webglExists = true // webglSupported()
 const gl = getWebGLContext()
 
+let audioCtx
+let source
+
 let Visualizer1 = (function () {
   if (!webglExists) return null
 
@@ -172,8 +175,6 @@ let Visualizer1 = (function () {
     // Set up WebAudio API handles
     if (analyser) return
     const AudioContext = window.AudioContext || window.webkitAudioContext
-    let audioCtx
-    let source
     try {
       audioCtx = new AudioContext()
       const gainNode = audioCtx.createGain()
