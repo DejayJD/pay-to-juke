@@ -10,7 +10,7 @@ import {
   SongStartEvent
 } from '../../types'
 import { audiusSdk } from './audiusSdk'
-import { TrackFull } from './types'
+import { PlayerTrackFull, TrackFull } from './types'
 import { uniq } from 'lodash'
 
 const LOCAL_WS_URL = 'ws://localhost:4001'
@@ -30,11 +30,12 @@ function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
 }
 
 export const WebSocketListener = () => {
-  const trackLoadStatusRef = useRef<Map<any, any>>(new Map())
+  const trackCacheRef = useRef<Map<string, TrackFull>>(new Map())
   const {
     setQueue,
     setQueueHistory,
     setCurrentTrack,
+    setCurrentTrackStartTime,
     websocket,
     setWebsocket
   } = useContext(AppContext)!
@@ -59,40 +60,44 @@ export const WebSocketListener = () => {
       history
     }: QueueChangeEvent | ServerSyncEvent) => {
       console.log('QUEUE CHANGE EVENT', { queue, history })
+
       const unfetchedQueueTrackIds: string[] = queue
-        .filter((track) => !trackLoadStatusRef.current.has(track.trackId)) // filter already fetched tracks
+        .filter((track) => !trackCacheRef.current.has(track.trackId)) // filter already fetched tracks
         .map((track) => track.trackId) // map down to only track ids
       const dedupedQueueIds = uniq(unfetchedQueueTrackIds)
+
       const unfetchedHistoryTrackIds: string[] = history
-        .filter((track) => !trackLoadStatusRef.current.has(track.trackId)) // filter already fetched tracks
+        .filter((track) => !trackCacheRef.current.has(track.trackId)) // filter already fetched tracks
         .map((track) => track.trackId)
       const dedupedHistoryIds = uniq(unfetchedHistoryTrackIds)
 
-      const allMissingTrackIds = [...dedupedHistoryIds, ...dedupedQueueIds]
+      const allMissingTrackIds = uniq([...dedupedHistoryIds, ...dedupedQueueIds])
 
+      // TODO: Should we return here?
       if (allMissingTrackIds.length === 0) return
 
       const missingTrackData = await audiusSdk.full.tracks.getBulkTracks({
         id: allMissingTrackIds
       })
       const trackData: TrackFull[] | undefined = missingTrackData.data
+
       if (!trackData) {
         console.error('Failed to fetch track data')
         return
       }
 
       const clientQueueData = queue.map((queuedTrack) => {
-        const track = trackData.find(
-          (track) => track.id === queuedTrack.trackId
-        )
-        return track as TrackFull
+        const track = trackCacheRef.current.get(queuedTrack.trackId)
+          ?? trackData.find((track) => track.id === queuedTrack.trackId)
+        return { ...track, uid: queuedTrack.uuid } as PlayerTrackFull
       })
+
       const clientHistoryData = history.map((queuedTrack) => {
-        const track = trackData.find(
-          (track) => track.id === queuedTrack.trackId
-        )
-        return track as TrackFull
+        const track = trackCacheRef.current.get(queuedTrack.trackId)
+          ?? trackData.find((track) => track.id === queuedTrack.trackId)
+        return { ...track, uid: queuedTrack.uuid } as PlayerTrackFull
       })
+
       setQueue(clientQueueData)
       setQueueHistory(clientHistoryData)
     }
@@ -102,11 +107,23 @@ export const WebSocketListener = () => {
     }: SongStartEvent | ServerSyncEvent) => {
       console.log('SONG START EVENT', { currentTrack })
       if (currentTrack) {
-        const { trackId } = currentTrack
-        const fullTrackData = await audiusSdk.full.tracks.getTrack({ trackId })
+        const { trackId, startTime, uuid } = currentTrack
+        if (trackCacheRef.current.has(trackId)) {
+          setCurrentTrackStartTime(startTime)
+          setCurrentTrack({
+            ...trackCacheRef.current.get(trackId) as TrackFull,
+            uid: uuid
+          })
+        } else {
+          const { data } = await audiusSdk.full.tracks.getTrack({ trackId })
 
-        if (fullTrackData.data) {
-          setCurrentTrack(fullTrackData.data)
+          if (data) {
+            setCurrentTrackStartTime(startTime)
+            setCurrentTrack({
+              ...data,
+              uid: uuid
+            })
+          }
         }
       }
     }
@@ -130,7 +147,7 @@ export const WebSocketListener = () => {
     }
 
     ws.onmessage = socketMessageHandler
-  }, [setQueue, setQueueHistory, setWebsocket, setCurrentTrack, websocket])
+  }, [setQueue, setQueueHistory, setWebsocket, setCurrentTrack, websocket, setCurrentTrackStartTime])
 
   return null
 }

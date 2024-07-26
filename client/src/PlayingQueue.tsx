@@ -29,7 +29,7 @@ export const PlayingQueue = () => {
         justifyContent='flex-end'
       >
         {queueHistory.reverse().map((track, i) => (
-          <TrackQueueTile track={track} position={(i + 1) * -1} isHistory />
+          <TrackQueueTile key={track.uid} track={track} position={(i + 1) * -1} isHistory />
         ))}
       </Flex>
 
@@ -74,7 +74,7 @@ export const PlayingQueue = () => {
         }}
       >
         {queue.map(
-          (track, i) => <TrackQueueTile track={track} position={i + 1} />
+          (track, i) => <TrackQueueTile key={track.uid} track={track} position={i + 1} />
         )}
       </Flex>
     </Flex>

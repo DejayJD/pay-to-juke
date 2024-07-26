@@ -8,6 +8,7 @@ import {
   PublicKey,
 } from '@solana/web3.js'
 import { base58 } from '@scure/base'
+import { create } from 'zustand'
 
 // connection
 const connection = new Connection('http://127.0.0.1:8899')
@@ -15,6 +16,11 @@ const connection = new Connection('http://127.0.0.1:8899')
 // keypair
 const keypair = loadAccount()
 export const pubkey = keypair.publicKey
+
+// balance state container
+export const balanceStore = create(() => ({
+  balance: 0,
+}))
 
 // restore keypair from localStorage
 function loadAccount() {
@@ -50,11 +56,13 @@ export async function airdrop(pubkey: PublicKey) {
 
 // get balance
 export async function getBalance(pubkey: PublicKey) {
-  const balance = await connection.getBalance(pubkey, 'confirmed')
-  return balance / LAMPORTS_PER_SOL
+  const lamportBalance = await connection.getBalance(pubkey, 'confirmed')
+  const balance = lamportBalance / LAMPORTS_PER_SOL
+  balanceStore.setState({ balance })
+  return balance
 }
 
-// payForPlay sends 12 SOL
+// payForPlay sends 1 SOL
 // to the jukebox account...
 export async function payForPlay() {
   const transaction = new Transaction()
@@ -62,7 +70,7 @@ export async function payForPlay() {
     SystemProgram.transfer({
       fromPubkey: pubkey,
       toPubkey: jukeboxAccount.publicKey,
-      lamports: LAMPORTS_PER_SOL * 12,
+      lamports: LAMPORTS_PER_SOL,
     })
   )
 
@@ -84,4 +92,6 @@ export async function payForPlay() {
     })
     console.log(tx)
   }
+
+  await getBalance(keypair.publicKey)
 }

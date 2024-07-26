@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react'
-import { airdrop, getBalance, pubkey } from './solana_dev'
+import { useEffect } from 'react'
+import { airdrop, balanceStore, getBalance, pubkey } from './solana_dev'
 import { Text } from '@audius/harmony'
 
 const address = pubkey.toBase58()
 
 export function Balance() {
-  const [bal, setBal] = useState(0.0)
+  const balance = balanceStore((s) => s.balance)
 
   useEffect(() => {
-    getBalance(pubkey).then(setBal)
+    getBalance(pubkey)
 
     const interval = setInterval(() => {
       airdrop(pubkey).then((b) => {
         console.debug('Airdropped sol ', address, b)
-        setBal(b)
       })
     }, 10 * 1000)
 
@@ -33,8 +32,12 @@ export function Balance() {
       }}
     >
       <b style={{ fontWeight: 'bold', fontSize: 24 }} title={address}>
-        {bal} SOL
+        {trunc(balance)} SOL
       </b>
     </Text>
   )
+}
+
+function trunc(number: number) {
+  return Math.trunc(number * 10) / 10
 }

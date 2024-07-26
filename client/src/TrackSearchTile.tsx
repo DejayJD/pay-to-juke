@@ -3,10 +3,12 @@ import { TrackFull } from './types'
 import { useContext } from 'react'
 import { AppContext } from './AppContext'
 import { getHrsMinsSecsText } from './utils'
+import { balanceStore } from './solana_dev'
 
 type TrackSearchTileProps = { track: TrackFull }
 
 export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
+  const balance = balanceStore((s) => s.balance)
   const { addTrackToQueue } = useContext(AppContext)!
 
   return (
@@ -34,11 +36,12 @@ export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
         </Flex>
         <Button
           fullWidth
+          disabled={balance < 1.0}
           onClick={() => {
             addTrackToQueue(track)
           }}
         >
-          Add
+          Add (1 SOL)
         </Button>
       </Flex>
     </Flex>
