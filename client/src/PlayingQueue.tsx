@@ -24,7 +24,7 @@ export const PlayingQueue = () => {
           flexGrow: 1,
           flexBasis: 1,
           overflow: 'hidden',
-          paddingBottom: 90 // Hack to semi-center the history/queue
+          paddingBottom: 90, // Hack to semi-center the history/queue
         }}
         justifyContent='flex-end'
       >
@@ -69,7 +69,7 @@ export const PlayingQueue = () => {
           flexGrow: 1,
           flexBasis: 1,
           overflow: 'hidden',
-          paddingBottom: 90 // Hack to semi-center the history/queue
+          paddingBottom: 90, // Hack to semi-center the history/queue
         }}
       >
         {queue.map(

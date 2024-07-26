@@ -13,6 +13,7 @@
   "dependencies": {
     "@audius/harmony": "latest",
     "@audius/sdk": "latest",
+    "@scure/base": "^1.1.7",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "react": "^18.2.0",
