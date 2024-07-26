@@ -1,6 +1,5 @@
 import {
   Flex,
-  IconButton,
   IconSearch,
   Text,
   TextInput,
@@ -20,7 +19,8 @@ export const TrackSearch = () => {
       query: searchText
     })
 
-    setTracklist(tracks ?? [])
+    // console.log({ tracks })
+    setTracklist(tracks as TrackFull[] ?? [])
 
     // const trackFavorites = (tracks ?? []).reduce<Record<string, boolean>>(
     //   (result, track) => ({
