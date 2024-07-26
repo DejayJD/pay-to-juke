@@ -32,6 +32,7 @@ export const PlayingQueue = () => {
           <TrackQueueTile track={track} position={(i + 1) * -1} isHistory />
         ))}
       </Flex>
+
       {/* Currently Playing */}
       <Flex css={{ flexShrink: 0 }}>
         {currentTrack ? (
@@ -73,7 +74,7 @@ export const PlayingQueue = () => {
         }}
       >
         {queue.map(
-          (track, i) => i !== 0 && <TrackQueueTile track={track} position={i} />
+          (track, i) => <TrackQueueTile track={track} position={i + 1} />
         )}
       </Flex>
     </Flex>

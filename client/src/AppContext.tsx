@@ -7,14 +7,14 @@ import { TrackFull } from './types'
 // Define the initial state of the context
 type AppContextState = {
   // Add your state properties here
+  currentTrack: TrackFull | null
   queue: TrackFull[]
   queueHistory: TrackFull[]
-  currentTrack: TrackFull | null
+  websocket: WebSocket | null
+  addTrackToQueue: (track: TrackFull) => void
+  setCurrentTrack: (song: TrackFull) => void
   setQueue: (queue: TrackFull[]) => void
   setQueueHistory: (queue: TrackFull[]) => void
-  setcurrentTrack: (song: TrackFull) => void
-  addTrackToQueue: (track: TrackFull) => void
-  websocket: WebSocket | null
   setWebsocket: (ws: WebSocket) => void
 }
 
@@ -23,7 +23,7 @@ export const AppContext = createContext<AppContextState | undefined>(undefined)
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
   const [queue, setQueue] = useState<TrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<TrackFull[]>([])
-  const [currentTrack, setcurrentTrack] = useState<TrackFull | null>(null)
+  const [currentTrack, setCurrentTrack] = useState<TrackFull | null>(null)
 
   const webSocketRef = useRef<WebSocket>(null)
 
@@ -62,7 +62,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         setWebsocket,
         addTrackToQueue,
         currentTrack,
-        setcurrentTrack
+        setCurrentTrack
       }}
     >
       {children}

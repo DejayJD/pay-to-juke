@@ -6,34 +6,38 @@ import { audiusSdk } from './audiusSdk'
 import { Scrubber } from './Scrubber'
 
 export const AudioPlayer = () => {
-  const { queue } = useContext(AppContext)!
+  const { currentTrack, queue } = useContext(AppContext)!
   const [trackSrc, setTrackSrc] = useState<string | null>(null)
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  const handleQueueChange = useCallback(
+  const handleCurrentTrackChange = useCallback(
     async () => {
+      if (!currentTrack || !audioRef.current) return
+      console.log({ currentTrack })
+
       const url = await audiusSdk.tracks.streamTrack({
-        trackId: queue[0].id,
+        trackId: currentTrack.id
       })
-      if (url !== trackSrc) {
-        // console.log({ url })
-        setTrackSrc(url)
-        audioRef.current?.load()
-      }
+
+      // console.log('loading', { url })
+      setTrackSrc(url)
+      audioRef.current.load()
+      // TODO: Set the actual currentTime
+      // audioRef.current.currentTime = 100
     },
-    [queue, trackSrc]
+    [currentTrack]
   )
 
   useEffect(() => {
-    console.log('QUEUE CHANGE', { queue })
-    if (queue.length > 0) {
-      handleQueueChange()
+    // console.log('CURRENT TRACK CHANGE', { currentTrack })
+    // console.log({ queue })
+    if (currentTrack) {
+      handleCurrentTrackChange()
     } else {
-      // Out of Tracks
       audioRef.current?.pause()
     }
-  }, [queue, handleQueueChange])
+  }, [currentTrack, queue, handleCurrentTrackChange])
 
   useEffect(() => {
     if (audioRef.current) {

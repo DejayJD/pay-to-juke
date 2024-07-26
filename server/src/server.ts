@@ -26,31 +26,39 @@ const wss = new WebSocketServer({
 })
 
 wss.on('connection', function connection(ws) {
-  // Sends track start event & sets timer to go to next song
-  const handleSongStart = (
-    nextSong: QueuedTrackData,
-    prevSong?: QueuedTrackData
-  ) => {
-    const handleSongEnd = () => {
-      const nextNextSong = queue.shift()
-      if (nextNextSong) {
-        handleSongStart(nextNextSong, nextSong)
-      } else {
-        // end playback
-        currentTrack = null
-      }
-    }
-    // send the queue change to the client
+  // Handle playing the next track in the queue
+  const handlePlayNextTrack = () => {
+    // If there is a current track, push into history
+    if (currentTrack) history.push(currentTrack)
+
+    // End playback if queue is empty
+    if (queue.length === 0) return endPlayback()
+
+    // Set current track to the next track in the queue
+    currentTrack = queue.shift() as QueuedTrackData
+
+    // Send events for song start and queue change
     const songStartEvent: SongStartEvent = {
       type: ServerSocketMessage.songStart,
-      currentTrack: nextSong
+      currentTrack
     }
-    currentTrack = nextSong
+    const queueChangeEvent: QueueChangeEvent = {
+      type: ServerSocketMessage.queueChange,
+      queue,
+      history: history
+    }
     ws.send(JSON.stringify(songStartEvent))
-    setTimeout(handleSongEnd, nextSong.trackDurationS * 1000)
-    if (prevSong) {
-      history.push(prevSong)
-    }
+    ws.send(JSON.stringify(queueChangeEvent))
+
+    // Start timer to play the next track
+    setTimeout(handlePlayNextTrack, currentTrack.trackDurationS * 1000)
+  }
+
+  // Called when we reach the end of the play queue
+  const endPlayback = () => {
+    currentTrack = null
+    // Send an event to client here if need be
+    // Could also start playing from the recommended queue here
   }
 
   // Adds a track to the queue
@@ -63,24 +71,26 @@ wss.on('connection', function connection(ws) {
 
     const startTime = new Date()
     const newUuid = uuid()
-    const newSong = {
+    const newTrack = {
       hash,
       trackId,
       startTime,
       trackDurationS,
       uuid: newUuid
     }
-    queue.push(newSong)
+    queue.push(newTrack)
+
     if (!currentTrack) {
-      handleSongStart(newSong)
+      handlePlayNextTrack()
+    } else {
+      // send the queue change to the client
+      const queueChangeEvent: QueueChangeEvent = {
+        type: ServerSocketMessage.queueChange,
+        queue,
+        history: history
+      }
+      ws.send(JSON.stringify(queueChangeEvent))
     }
-    // send the queue change to the client
-    const queueChangeEvent: QueueChangeEvent = {
-      type: ServerSocketMessage.queueChange,
-      queue: [...queue, newSong],
-      history: history
-    }
-    ws.send(JSON.stringify(queueChangeEvent))
   }
 
   const handleSyncRequest = () => {

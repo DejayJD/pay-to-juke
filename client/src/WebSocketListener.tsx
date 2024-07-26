@@ -17,7 +17,7 @@ const LOCAL_WS_URL = 'ws://localhost:4001'
 
 // Make the function wait until the connection is made...
 function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
-  setTimeout(function () {
+  setTimeout(function() {
     if (socket.readyState === 1) {
       if (callback != null) {
         callback()
@@ -34,7 +34,7 @@ export const WebSocketListener = () => {
   const {
     setQueue,
     setQueueHistory,
-    setcurrentTrack,
+    setCurrentTrack,
     websocket,
     setWebsocket
   } = useContext(AppContext)!
@@ -58,7 +58,7 @@ export const WebSocketListener = () => {
       queue,
       history
     }: QueueChangeEvent | ServerSyncEvent) => {
-      //   console.log({ event })
+      console.log('QUEUE CHANGE EVENT', { queue, history })
       const unfetchedQueueTrackIds: string[] = queue
         .filter((track) => !trackLoadStatusRef.current.has(track.trackId)) // filter already fetched tracks
         .map((track) => track.trackId) // map down to only track ids
@@ -100,12 +100,13 @@ export const WebSocketListener = () => {
     const handleSongStart = async ({
       currentTrack
     }: SongStartEvent | ServerSyncEvent) => {
+      console.log('SONG START EVENT', { currentTrack })
       if (currentTrack) {
         const { trackId } = currentTrack
         const fullTrackData = await audiusSdk.full.tracks.getTrack({ trackId })
 
         if (fullTrackData.data) {
-          setcurrentTrack(fullTrackData.data)
+          setCurrentTrack(fullTrackData.data)
         }
       }
     }
@@ -129,7 +130,7 @@ export const WebSocketListener = () => {
     }
 
     ws.onmessage = socketMessageHandler
-  }, [setQueue, setQueueHistory, setWebsocket, setcurrentTrack, websocket])
+  }, [setQueue, setQueueHistory, setWebsocket, setCurrentTrack, websocket])
 
   return null
 }
