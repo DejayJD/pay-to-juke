@@ -23,7 +23,7 @@ export type ClientSocketEvent = ClientQueueRequestEvent | ClientSyncRequestEvent
 export type QueuedTrackData = {
   hash: string
   trackId: string
-  startTime: Date
+  startTime: Date | null
   trackDurationS: number
   uuid: string
 }

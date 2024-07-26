@@ -2,29 +2,32 @@ import { createContext, PropsWithChildren, useRef, useState } from 'react'
 
 import { ClientQueueRequestEvent, ClientSocketMessage } from '../../types'
 
-import { TrackFull } from './types'
 import { payForPlay } from './solana_dev'
+import { TrackFull, PlayerTrackFull } from './types'
 
 // Define the initial state of the context
 type AppContextState = {
   // Add your state properties here
-  currentTrack: TrackFull | null
-  queue: TrackFull[]
-  queueHistory: TrackFull[]
+  currentTrack: PlayerTrackFull | null
+  currentTrackStartTime: Date | null
+  queue: PlayerTrackFull[]
+  queueHistory: PlayerTrackFull[]
   websocket: WebSocket | null
   addTrackToQueue: (track: TrackFull) => void
-  setCurrentTrack: (song: TrackFull) => void
-  setQueue: (queue: TrackFull[]) => void
-  setQueueHistory: (queue: TrackFull[]) => void
+  setCurrentTrack: (song: PlayerTrackFull) => void
+  setCurrentTrackStartTime: (time: Date | null) => void
+  setQueue: (queue: PlayerTrackFull[]) => void
+  setQueueHistory: (queue: PlayerTrackFull[]) => void
   setWebsocket: (ws: WebSocket) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
-  const [queue, setQueue] = useState<TrackFull[]>([])
-  const [queueHistory, setQueueHistory] = useState<TrackFull[]>([])
-  const [currentTrack, setCurrentTrack] = useState<TrackFull | null>(null)
+  const [queue, setQueue] = useState<PlayerTrackFull[]>([])
+  const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
+  const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
+  const [currentTrackStartTime, setCurrentTrackStartTime] = useState<Date | null>(null)
 
   const webSocketRef = useRef<WebSocket>(null)
 
@@ -71,6 +74,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         addTrackToQueue,
         currentTrack,
         setCurrentTrack,
+        currentTrackStartTime,
+        setCurrentTrackStartTime
       }}
     >
       {children}

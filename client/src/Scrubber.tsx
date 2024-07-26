@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { AppContext } from './AppContext'
 import { HarmonyScrubber } from './HarmonyScrubber/HarmonyScrubber'
 
-export const Scrubber = () => {
+export const Scrubber = ({ elapsed = 0 }: { elapsed?: number }) => {
   const { currentTrack } = useContext(AppContext)!
 
   const isPlaying = currentTrack !== null
@@ -13,7 +13,7 @@ export const Scrubber = () => {
       isPlaying={isPlaying}
       includeTimestamps
       playbackRate={1}
-      elapsedSeconds={0}
+      elapsedSeconds={elapsed}
       totalSeconds={currentTrack?.duration ?? 0}
       isDisabled
       style={{

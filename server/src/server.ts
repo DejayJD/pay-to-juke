@@ -35,7 +35,9 @@ wss.on('connection', function connection(ws) {
     if (queue.length === 0) return endPlayback()
 
     // Set current track to the next track in the queue
+    const startTime = new Date()
     currentTrack = queue.shift() as QueuedTrackData
+    currentTrack.startTime = startTime
 
     // Send events for song start and queue change
     const songStartEvent: SongStartEvent = {
@@ -69,13 +71,12 @@ wss.on('connection', function connection(ws) {
   }: ClientQueueRequestEvent) => {
     // TODO: do web 3 shit - verify hash here
 
-    const startTime = new Date()
     const newUuid = uuid()
     const newTrack = {
       hash,
       trackId,
-      startTime,
       trackDurationS,
+      startTime: null,
       uuid: newUuid
     }
     queue.push(newTrack)
