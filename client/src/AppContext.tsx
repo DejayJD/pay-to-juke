@@ -3,6 +3,7 @@ import { createContext, PropsWithChildren, useRef, useState } from 'react'
 import { ClientQueueRequestEvent, ClientSocketMessage } from '../../types'
 
 import { TrackFull } from './types'
+import { payForPlay } from './solana_dev'
 
 // Define the initial state of the context
 type AppContextState = {
@@ -32,7 +33,17 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
     webSocketRef.current = ws
   }
 
-  const addTrackToQueue = (track: TrackFull) => {
+  const addTrackToQueue = async (track: TrackFull) => {
+    // todo: update balance
+    // todo: don't play track if insufficient balance
+    // also... disable the button if insufficient balance
+
+    try {
+      await payForPlay()
+    } catch (e) {
+      console.log('payForPlay failed', e)
+    }
+
     // TODO: do dope web3 shit here
 
     const transactionHash = 'oawdnaiowudnaowudn127893'
@@ -41,7 +52,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
       type: ClientSocketMessage.queueAddRequest,
       hash: transactionHash,
       trackId: track.id,
-      trackDurationS: track.duration
+      trackDurationS: track.duration,
     }
 
     // Send to the server
@@ -61,7 +72,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         setWebsocket,
         addTrackToQueue,
         currentTrack,
-        setCurrentTrack
+        setCurrentTrack,
       }}
     >
       {children}

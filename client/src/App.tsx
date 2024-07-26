@@ -8,6 +8,7 @@ import { WebSocketListener } from './WebSocketListener'
 
 import './App.css'
 import { AudioPlayer } from './AudioPlayer'
+import { Balance } from './Balance'
 
 export default function App() {
   // /**
@@ -28,6 +29,7 @@ export default function App() {
       <AppContextProvider>
         <WebSocketListener />
         <Flex direction='column' gap='m' m='2xl' alignItems='center'>
+          <Balance />
           <PlayingQueue />
           <AudioPlayer />
           <TrackSearch />

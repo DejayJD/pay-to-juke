@@ -5,66 +5,76 @@ import {
   sendAndConfirmTransaction,
   SystemProgram,
   Transaction,
+  PublicKey,
 } from '@solana/web3.js'
 import { base58 } from '@scure/base'
 
 // connection
 const connection = new Connection('http://127.0.0.1:8899')
 
-// 5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CmPEwKgVWr8
-const payer = Keypair.fromSecretKey(
-  base58.decode(
-    '2akUugUVUVYHxg8QhUNqcBqGsfzT4T9yPCx46XbaGUndhQ4AjZV8nDNR1HvZP5kjymQf5ooP3wreEQ1457UjhHpu'
-  )
-)
+// keypair
+const keypair = loadAccount()
+export const pubkey = keypair.publicKey
 
-const toAccount = Keypair.fromSecretKey(
+// restore keypair from localStorage
+function loadAccount() {
+  const STORAGE_KEY = 'jukebox-secret-key'
+  let secretKey = localStorage.getItem(STORAGE_KEY)
+  if (!secretKey) {
+    const keypair = Keypair.generate()
+    secretKey = base58.encode(keypair.secretKey)
+    localStorage.setItem(STORAGE_KEY, secretKey)
+  }
+  const kp = Keypair.fromSecretKey(base58.decode(secretKey))
+  const pubkey = kp.publicKey.toBase58()
+  console.log('public key', pubkey)
+  console.log('private key', secretKey)
+  return kp
+}
+
+const jukeboxAccount = Keypair.fromSecretKey(
   base58.decode(
     '2brWef2xnp2EEG2nJARnAftSDUW9SrmX2zMVukF3Y3qDFXwuziDrHaumYdDVVTTRU9ysM3L7xQaziFDdfMRQsfV2'
   )
 )
 
-async function airdrop(k: Keypair) {
-  console.log(`airdrop ${k.publicKey.toBase58()}`)
+// airdrop
+export async function airdrop(pubkey: PublicKey) {
   const signature = await connection.requestAirdrop(
-    k.publicKey,
-    LAMPORTS_PER_SOL
+    pubkey,
+    LAMPORTS_PER_SOL / 10
   )
   await connection.confirmTransaction(signature, 'confirmed')
-  const balance = await connection.getBalance(k.publicKey)
-  console.log(k.publicKey.toBase58(), `${balance / LAMPORTS_PER_SOL} SOL`)
+  return getBalance(pubkey)
 }
 
-async function sendIt() {
-  // Create Simple Transaction
-  const transaction = new Transaction()
+// get balance
+export async function getBalance(pubkey: PublicKey) {
+  const balance = await connection.getBalance(pubkey, 'confirmed')
+  return balance / LAMPORTS_PER_SOL
+}
 
-  // Add an instruction to execute
+// payForPlay sends 12 SOL
+// to the jukebox account...
+export async function payForPlay() {
+  const transaction = new Transaction()
   transaction.add(
     SystemProgram.transfer({
-      fromPubkey: payer.publicKey,
-      toPubkey: toAccount.publicKey,
-      lamports: LAMPORTS_PER_SOL,
+      fromPubkey: pubkey,
+      toPubkey: jukeboxAccount.publicKey,
+      lamports: LAMPORTS_PER_SOL * 12,
     })
   )
 
-  console.log(new Date(), 'sending...')
+  // send
   const txhash = await sendAndConfirmTransaction(
     connection,
     transaction,
-    [payer],
+    [keypair],
     {
       commitment: 'confirmed',
     }
   )
-
-  // get balance for recipient
-  {
-    console.log(new Date(), 'getting balance...')
-    const k = toAccount
-    const balance = await connection.getBalance(k.publicKey)
-    console.log(k.publicKey.toBase58(), `${balance / LAMPORTS_PER_SOL} SOL`)
-  }
 
   // get tx detail
   {
@@ -75,16 +85,3 @@ async function sendIt() {
     console.log(tx)
   }
 }
-
-function generateKeyPair() {
-  const keypair = Keypair.generate()
-  console.log('a private key', base58.encode(keypair.secretKey))
-}
-
-async function main() {
-  generateKeyPair()
-  await airdrop(toAccount)
-  await sendIt()
-}
-
-main()
