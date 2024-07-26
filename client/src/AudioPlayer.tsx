@@ -6,7 +6,7 @@ import { audiusSdk } from './audiusSdk'
 import { Scrubber } from './Scrubber'
 
 export const AudioPlayer = () => {
-  const { currentTrack, queue } = useContext(AppContext)!
+  const { currentTrack } = useContext(AppContext)!
   const [trackSrc, setTrackSrc] = useState<string | null>(null)
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -37,7 +37,7 @@ export const AudioPlayer = () => {
     } else {
       audioRef.current?.pause()
     }
-  }, [currentTrack, queue, handleCurrentTrackChange])
+  }, [currentTrack, handleCurrentTrackChange])
 
   useEffect(() => {
     if (audioRef.current) {

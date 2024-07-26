@@ -29,7 +29,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
 
   const setWebsocket = (ws: WebSocket) => {
     // @ts-expect-error - too lazy to cast useRef to mutable ref type shit
-
     webSocketRef.current = ws
   }
 
