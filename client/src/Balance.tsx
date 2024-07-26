@@ -32,8 +32,12 @@ export function Balance() {
       }}
     >
       <b style={{ fontWeight: 'bold', fontSize: 24 }} title={address}>
-        {balance.toFixed(1)} SOL
+        {trunc(balance)} SOL
       </b>
     </Text>
   )
+}
+
+function trunc(number: number) {
+  return Math.trunc(number * 10) / 10
 }
