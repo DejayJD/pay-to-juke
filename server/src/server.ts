@@ -8,7 +8,8 @@ import {
   ServerSocketMessage,
   SongStartEvent,
   QueuedTrackData,
-  ServerSyncEvent
+  ServerSyncEvent,
+  EndPlaybackEvent
 } from '../../types'
 import { uuid } from './uuid'
 
@@ -58,9 +59,13 @@ wss.on('connection', function connection(ws) {
 
   // Called when we reach the end of the play queue
   const endPlayback = () => {
+    // TODO: Could also start playing from the recommended queue here
     currentTrack = null
-    // Send an event to client here if need be
-    // Could also start playing from the recommended queue here
+    // Send end playback event to the client
+    const endPlaybackEvent: EndPlaybackEvent = {
+      type: ServerSocketMessage.endPlayback
+    }
+    ws.send(JSON.stringify(endPlaybackEvent))
   }
 
   // Adds a track to the queue

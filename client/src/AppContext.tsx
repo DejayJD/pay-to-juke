@@ -42,7 +42,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
 
   const setAudioPlayer = useCallback((audioPlayer: HTMLAudioElement) => {
     // @ts-expect-error - too lazy to cast useRef to mutable ref type shit
-
     audioPlayerRef.current = audioPlayer
   }, [])
 

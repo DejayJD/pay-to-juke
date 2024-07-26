@@ -174,7 +174,7 @@ let Visualizer1 = (function () {
   function bind(audio) {
     // Set up WebAudio API handles
     if (analyser) return
-    const AudioContext = window.AudioContext || window.webkitAudioContext
+    // const AudioContext = window.AudioContext || window.webkitAudioContext
     try {
       audioCtx = new AudioContext()
       const gainNode = audioCtx.createGain()

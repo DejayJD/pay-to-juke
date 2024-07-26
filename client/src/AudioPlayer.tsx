@@ -65,7 +65,7 @@ export const AudioPlayer = () => {
 
   return (
     <>
-      <Flex w='70%' mt='2xl'>
+      <Flex w='70%' mt='2xl' gap='m'>
         <Scrubber elapsed={elapsedTime} />
         <Button onClick={() => { setIsMuted(val => !val) }}>{isMuted ? 'Unmute' : 'Mute'}</Button>
       </Flex>

@@ -31,6 +31,7 @@ export type QueuedTrackData = {
 export enum ServerSocketMessage {
   queueChange = 'queueChange',
   songStart = 'songStart',
+  endPlayback = 'endPlayback',
   sync = 'sync'
 }
 
@@ -38,6 +39,10 @@ export type QueueChangeEvent = {
   type: ServerSocketMessage.queueChange
   queue: QueuedTrackData[]
   history: QueuedTrackData[]
+}
+
+export type EndPlaybackEvent = {
+  type: ServerSocketMessage.endPlayback
 }
 
 export type SongStartEvent = {
@@ -55,4 +60,5 @@ export type ServerSyncEvent = {
 export type ServerSocketEvent =
   | QueueChangeEvent
   | SongStartEvent
+  | EndPlaybackEvent
   | ServerSyncEvent

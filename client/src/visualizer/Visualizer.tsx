@@ -39,8 +39,8 @@ export const Visualizer = ({ dominantColors }: VisualizerProps) => {
     }
     if (isPlaying) {
       audioPlayer.addEventListener('canplay', () => {
-        console.log('audio player is binding')
-        Visualizer1?.bind(audioPlayer)
+        // console.log('audio player is binding')
+        // Visualizer1?.bind(audioPlayer)
       })
     }
   }, [isPlaying, currentTrack, audioPlayer])
