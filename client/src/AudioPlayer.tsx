@@ -14,7 +14,8 @@ const getSeekPosition = (startTime: Date) => {
 }
 
 export const AudioPlayer = () => {
-  const { currentTrack, currentTrackStartTime, setAudioPlayer } = useContext(AppContext)!
+  const { currentTrack, currentTrackStartTime, setAudioPlayer } =
+    useContext(AppContext)!
   const [trackUid, setTrackUid] = useState<string | null>(null)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [isMuted, setIsMuted] = useState(true)
@@ -27,23 +28,20 @@ export const AudioPlayer = () => {
     setAudioPlayer(el)
   }
 
-  const handleCurrentTrackChange = useCallback(
-    async () => {
-      if (!currentTrack || !currentTrackStartTime || !audioRef.current) return
-      const url = await audiusSdk.tracks.streamTrack({
-        trackId: currentTrack.id
-      })
+  const handleCurrentTrackChange = useCallback(async () => {
+    if (!currentTrack || !currentTrackStartTime || !audioRef.current) return
+    const url = await audiusSdk.tracks.streamTrack({
+      trackId: currentTrack.id
+    })
 
-      // Set src and load
-      setTrackUid(currentTrack.uid)
-      audioRef.current.src = url
-      audioRef.current.load()
+    // Set src and load
+    setTrackUid(currentTrack.uid)
+    audioRef.current.src = url
+    audioRef.current.load()
 
-      // Set seek position
-      audioRef.current.currentTime = getSeekPosition(currentTrackStartTime)
-    },
-    [currentTrack, currentTrackStartTime]
-  )
+    // Set seek position
+    audioRef.current.currentTime = getSeekPosition(currentTrackStartTime)
+  }, [currentTrack, currentTrackStartTime])
 
   useEffect(() => {
     if (currentTrack) {
@@ -65,10 +63,6 @@ export const AudioPlayer = () => {
 
   return (
     <>
-      <Flex w='70%' mt='2xl' gap='m'>
-        <Scrubber elapsed={elapsedTime} />
-        <Button onClick={() => { setIsMuted(val => !val) }}>{isMuted ? 'Unmute' : 'Mute'}</Button>
-      </Flex>
       <audio
         ref={(ref) => setAudioRef(ref)}
         css={{ display: 'none' }}

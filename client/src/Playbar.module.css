@@ -1,0 +1,9 @@
+.searchDrawer {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #242438;
+  overflow:hidden;
+  border-top-right-radius: 1em;
+  border-top-left-radius: 1em;
+}

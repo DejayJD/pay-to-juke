@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  /* Setting explicit height to make the emojis pop out of the popup */
+  height: var(--harmony-unit-18);
+  background-color: #393952;
+}
+
+.popup {
+  border-radius: 10px;
+  background-color: #393952;
+}

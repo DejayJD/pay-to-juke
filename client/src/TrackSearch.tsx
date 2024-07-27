@@ -32,7 +32,7 @@ export const TrackSearch = () => {
   }
 
   return (
-    <Flex direction='column' gap='s' mt='2xl'>
+    <Flex direction='column' gap='s' mv='2xl' pb='2xl'>
       <Text color='default'>Search for a track to play</Text>
       <Flex gap='m' w='500px'>
         <TextInput

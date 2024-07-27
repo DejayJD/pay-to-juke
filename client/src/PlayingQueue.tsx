@@ -15,67 +15,74 @@ export const PlayingQueue = () => {
   }
 
   return (
-    <Flex w='80%' gap='l' justifyContent='space-between'>
-      {/* History */}
-      <Flex
-        alignItems='center'
-        gap='l'
-        css={{
-          flexGrow: 1,
-          flexBasis: 1,
-          overflow: 'hidden',
-          paddingBottom: 90, // Hack to semi-center the history/queue
-        }}
-        justifyContent='flex-end'
-      >
-        {queueHistory.reverse().map((track, i) => (
-          <TrackQueueTile key={track.uid} track={track} position={(i + 1) * -1} isHistory />
-        ))}
-      </Flex>
-
-      {/* Currently Playing */}
-      <Flex css={{ flexShrink: 0 }}>
-        {currentTrack ? (
-          <Flex gap='s' direction='column'>
-            <TrackQueueTile track={currentTrack} position={0} />
-            <Avatar
-              src={currentTrack.user.profilePicture?._150x150}
-              size='xl'
-              css={{ position: 'absolute', bottom: 50, left: -25 }}
+    <Flex w='100%' justifyContent='center'>
+      <Flex w='80%' gap='l' justifyContent='space-between'>
+        {/* History */}
+        <Flex
+          alignItems='center'
+          gap='l'
+          css={{
+            flexGrow: 1,
+            flexBasis: 1,
+            overflow: 'hidden',
+            paddingBottom: 90 // Hack to semi-center the history/queue
+          }}
+          justifyContent='flex-end'
+        >
+          {queueHistory.reverse().map((track, i) => (
+            <TrackQueueTile
+              key={track.uid}
+              track={track}
+              position={(i + 1) * -1}
+              isHistory
             />
-            <Text
-              size='m'
-              variant='title'
-              color='default'
-              css={({ spacing }) => ({ marginTop: spacing.xl })}
-            >
-              {currentTrack.title}
-            </Text>
-            <Text size='xs' color='default'>
-              {currentTrack.user.handle}
-            </Text>
-          </Flex>
-        ) : queue.length === 0 ? (
-          <Text color='default'> nothing to play </Text>
-        ) : (
-          <Flex> loading... </Flex>
-        )}
-      </Flex>
+          ))}
+        </Flex>
 
-      {/* Upcoming queue */}
-      <Flex
-        alignItems='center'
-        gap='l'
-        css={{
-          flexGrow: 1,
-          flexBasis: 1,
-          overflow: 'hidden',
-          paddingBottom: 90, // Hack to semi-center the history/queue
-        }}
-      >
-        {queue.map(
-          (track, i) => <TrackQueueTile key={track.uid} track={track} position={i + 1} />
-        )}
+        {/* Currently Playing */}
+        <Flex css={{ flexShrink: 0 }}>
+          {currentTrack ? (
+            <Flex gap='s' direction='column'>
+              <TrackQueueTile track={currentTrack} position={0} />
+              <Avatar
+                src={currentTrack.user.profilePicture?._150x150}
+                size='xl'
+                css={{ position: 'absolute', bottom: 50, left: -25 }}
+              />
+              <Text
+                size='m'
+                variant='title'
+                color='default'
+                css={({ spacing }) => ({ marginTop: spacing.xl })}
+              >
+                {currentTrack.title}
+              </Text>
+              <Text size='xs' color='default'>
+                {currentTrack.user.handle}
+              </Text>
+            </Flex>
+          ) : queue.length === 0 ? (
+            <Text color='default'> nothing to play </Text>
+          ) : (
+            <Flex> loading... </Flex>
+          )}
+        </Flex>
+
+        {/* Upcoming queue */}
+        <Flex
+          alignItems='center'
+          gap='l'
+          css={{
+            flexGrow: 1,
+            flexBasis: 1,
+            overflow: 'hidden',
+            paddingBottom: 90 // Hack to semi-center the history/queue
+          }}
+        >
+          {queue.map((track, i) => (
+            <TrackQueueTile key={track.uid} track={track} position={i + 1} />
+          ))}
+        </Flex>
       </Flex>
     </Flex>
   )

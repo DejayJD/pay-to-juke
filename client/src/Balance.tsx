@@ -1,8 +1,12 @@
 import { useEffect } from 'react'
 import { airdrop, balanceStore, getBalance, pubkey } from './solana_dev'
-import { Text } from '@audius/harmony'
+import { Flex, IconWallet, Text } from '@audius/harmony'
 
 const address = pubkey.toBase58()
+
+function trunc(number: number) {
+  return Math.trunc(number * 10) / 10
+}
 
 export function Balance() {
   const balance = balanceStore((s) => s.balance)
@@ -21,23 +25,9 @@ export function Balance() {
   }, [])
 
   return (
-    <Text
-      // color='default'
-      textAlign='center'
-      style={{
-        backgroundColor: 'pink',
-        padding: '10px 50px',
-        color: 'darkpurple',
-        borderRadius: 100,
-      }}
-    >
-      <b style={{ fontWeight: 'bold', fontSize: 24 }} title={address}>
-        {trunc(balance)} SOL
-      </b>
-    </Text>
+    <Flex gap='xs' alignItems='center'>
+      <IconWallet size='2xl' color='default' />
+      <Text color='default'>{trunc(balance)} SOL</Text>
+    </Flex>
   )
-}
-
-function trunc(number: number) {
-  return Math.trunc(number * 10) / 10
 }

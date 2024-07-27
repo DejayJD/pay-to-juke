@@ -1,15 +1,13 @@
 import { ThemeProvider as HarmonyThemeProvider } from '@audius/harmony'
-import { Flex } from '@audius/harmony'
 
-import { PlayingQueue } from './PlayingQueue'
-import { TrackSearch } from './TrackSearch'
 import { AppContextProvider } from './AppContext'
 import { WebSocketListener } from './WebSocketListener'
 
 import './App.css'
 import { AudioPlayer } from './AudioPlayer'
-import { Balance } from './Balance'
 import { Visualizer } from './visualizer/Visualizer'
+import { Playbar } from './Playbar'
+import { PlayingQueue } from './PlayingQueue'
 
 export default function App() {
   // /**
@@ -28,14 +26,13 @@ export default function App() {
   return (
     <HarmonyThemeProvider theme='dark'>
       <AppContextProvider>
+        <AudioPlayer />
         <WebSocketListener />
         <Visualizer />
-        <Flex direction='column' gap='m' m='2xl' alignItems='center'>
-          <PlayingQueue />
-          <AudioPlayer />
-          <TrackSearch />
-          <Balance />
-        </Flex>
+        {/* <FireReaction /> */}
+        <Playbar />
+        <PlayingQueue />
+        {/* <TrackSearch /> */}
       </AppContextProvider>
     </HarmonyThemeProvider>
   )

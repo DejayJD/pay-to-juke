@@ -41,7 +41,7 @@ export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
             addTrackToQueue(track)
           }}
         >
-          Add (1 SOL)
+          Queue Song (1 SOL)
         </Button>
       </Flex>
     </Flex>

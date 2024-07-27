@@ -3,7 +3,8 @@
  */
 export enum ClientSocketMessage {
   queueAddRequest = 'queueAddRequest',
-  syncRequest = 'syncRequest'
+  syncRequest = 'syncRequest',
+  reaction = 'reaction'
 }
 
 export type ClientQueueRequestEvent = {
@@ -12,9 +13,18 @@ export type ClientQueueRequestEvent = {
   trackId: string
   trackDurationS: number
 }
+
 export type ClientSyncRequestEvent = { type: ClientSocketMessage.syncRequest }
 
-export type ClientSocketEvent = ClientQueueRequestEvent | ClientSyncRequestEvent
+export type ClientReactionEvent = {
+  type: ClientSocketMessage.reaction
+  reactionType: string
+}
+
+export type ClientSocketEvent =
+  | ClientQueueRequestEvent
+  | ClientSyncRequestEvent
+  | ClientReactionEvent
 
 /**
  * Stuff the server can send to the client
@@ -32,7 +42,8 @@ export enum ServerSocketMessage {
   queueChange = 'queueChange',
   songStart = 'songStart',
   endPlayback = 'endPlayback',
-  sync = 'sync'
+  sync = 'sync',
+  reaction = 'reaction'
 }
 
 export type QueueChangeEvent = {
@@ -57,8 +68,14 @@ export type ServerSyncEvent = {
   currentTrack: QueuedTrackData | null
 }
 
+export type ServerReactionEvent = {
+  type: ServerSocketMessage.reaction
+  reactionType: string
+}
+
 export type ServerSocketEvent =
   | QueueChangeEvent
   | SongStartEvent
   | EndPlaybackEvent
   | ServerSyncEvent
+  | ServerReactionEvent

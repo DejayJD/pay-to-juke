@@ -20,6 +20,7 @@ type AppContextState = {
   queueHistory: PlayerTrackFull[]
   websocket: WebSocket | null
   audioPlayer: HTMLAudioElement | null
+  isMuted: boolean
   addTrackToQueue: (track: TrackFull) => void
   setCurrentTrack: (song: PlayerTrackFull) => void
   setCurrentTrackStartTime: (time: Date | null) => void
@@ -27,15 +28,18 @@ type AppContextState = {
   setQueueHistory: (queue: PlayerTrackFull[]) => void
   setWebsocket: (ws: WebSocket) => void
   setAudioPlayer: (audioPlayer: HTMLAudioElement) => void
+  setIsMuted: (isMuted: boolean) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
+  const [isMuted, setIsMuted] = useState<boolean>(false)
   const [queue, setQueue] = useState<PlayerTrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
   const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
-  const [currentTrackStartTime, setCurrentTrackStartTime] = useState<Date | null>(null)
+  const [currentTrackStartTime, setCurrentTrackStartTime] =
+    useState<Date | null>(null)
 
   const webSocketRef = useRef<WebSocket>(null)
   const audioPlayerRef = useRef<HTMLAudioElement>(null)
@@ -91,7 +95,9 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         audioPlayer: audioPlayerRef?.current,
         setAudioPlayer,
         currentTrackStartTime,
-        setCurrentTrackStartTime
+        setCurrentTrackStartTime,
+        isMuted,
+        setIsMuted
       }}
     >
       {children}
