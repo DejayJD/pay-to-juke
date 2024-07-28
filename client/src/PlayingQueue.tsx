@@ -1,19 +1,20 @@
 import { Avatar, Flex, Text } from '@audius/harmony'
-import { TrackQueueTile } from './TrackQueueTile'
+import { EmptyQueueTile, TrackQueueTile } from './TrackQueueTile'
 import { AppContext } from './AppContext'
 import { useContext } from 'react'
 
 export const PlayingQueue = () => {
   const { queue, queueHistory, currentTrack } = useContext(AppContext)!
 
-  if (queue.length === 0 && queueHistory.length === 0 && !currentTrack) {
+  if (queue.length === 0 && !currentTrack) {
     return (
-      <Text variant='title' color='default'>
-        Queue something to start the jukebox!
-      </Text>
+      <Flex alignItems='center' justifyContent='center' h='200px'>
+        <Text variant='heading' color='default' size='s' textAlign='center'>
+          Queue something to start the jukebox!
+        </Text>
+      </Flex>
     )
   }
-
   return (
     <Flex w='100%' justifyContent='center'>
       <Flex w='80%' gap='l' justifyContent='space-between'>
@@ -61,8 +62,6 @@ export const PlayingQueue = () => {
                 {currentTrack.user.handle}
               </Text>
             </Flex>
-          ) : queue.length === 0 ? (
-            <Text color='default'> nothing to play </Text>
           ) : (
             <Flex> loading... </Flex>
           )}

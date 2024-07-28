@@ -9,7 +9,8 @@ import {
   SongStartEvent,
   QueuedTrackData,
   ServerSyncEvent,
-  EndPlaybackEvent
+  EndPlaybackEvent,
+  ClientReactionEvent
 } from '../../types'
 import { uuid } from './uuid'
 
@@ -26,7 +27,10 @@ const wss = new WebSocketServer({
   port: WS_PORT
 })
 
+const allSockets: any[] = []
+
 wss.on('connection', function connection(ws) {
+  allSockets.push(ws)
   // Handle playing the next track in the queue
   const handlePlayNextTrack = () => {
     // If there is a current track, push into history
@@ -109,6 +113,12 @@ wss.on('connection', function connection(ws) {
     ws.send(JSON.stringify(syncEventData))
   }
 
+  const handleReaction = (reactionEvent: ClientReactionEvent) => {
+    allSockets.forEach((socket) => {
+      socket.send(JSON.stringify(reactionEvent))
+    })
+  }
+
   ws.on('message', function message(message: any) {
     const data: ClientSocketEvent = JSON.parse(message)
     console.log('received message! type:', data.type)
@@ -117,6 +127,9 @@ wss.on('connection', function connection(ws) {
     }
     if (data.type === ClientSocketMessage.syncRequest) {
       handleSyncRequest()
+    }
+    if (data.type === ClientSocketMessage.reaction) {
+      handleReaction(data)
     }
   })
 

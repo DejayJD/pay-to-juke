@@ -7,6 +7,20 @@ type TrackQueueTileProps = {
   isHistory?: boolean
 }
 
+// export const EmptyQueueTile = () => {
+//   return (
+//     <Paper
+//       w={380}
+//       gap='s'
+//       css={{
+//         top: -40,
+//         flexShrink: 0
+//       }}
+//       direction='column'
+//     />
+//   )
+// }
+
 export const TrackQueueTile = ({ track, position }: TrackQueueTileProps) => {
   const isPlaying = position === 0
   const size = isPlaying ? 380 : 280

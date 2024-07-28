@@ -57,16 +57,6 @@ export const Reaction = (props: ReactionProps) => {
     [animation]
   )
 
-  const handleClick: MouseEventHandler = useCallback(
-    (event) => {
-      if (!isClicked) {
-        onClick?.(event)
-      }
-      setIsClicked(true)
-    },
-    [onClick, isClicked]
-  )
-
   const handleMouseEnter = useCallback(() => {
     setInteracting(true)
   }, [])
@@ -93,7 +83,7 @@ export const Reaction = (props: ReactionProps) => {
         [styles.responsive]: isResponsive,
         [styles.clicked]: !disableClickAnimation && isClicked
       })}
-      onClick={handleClick}
+      onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   IconButton,
   IconMood,
@@ -6,7 +7,6 @@ import {
   IconVolumeLevel0,
   IconVolumeLevel3
 } from '@audius/harmony'
-import { Scrubber } from './Scrubber'
 import { Balance } from './Balance'
 import { useContext, useRef, useState } from 'react'
 import { AppContext } from './AppContext'
@@ -14,18 +14,20 @@ import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import styles from './Playbar.module.css'
 import { TrackSearch } from './TrackSearch'
-import { ReactionPopupMenu } from './Reaction/ReactionPopupMenu'
+import { ReactionPopupMenu } from './Reactions/ReactionPopupMenu'
+import { AudioPlayer } from './AudioPlayer'
+import { ReactionType } from './Reactions'
 
 export const Playbar = () => {
-  const { isMuted, setIsMuted } = useContext(AppContext)!
+  const { isMuted, setIsMuted, sendReactionToServer } = useContext(AppContext)!
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isReactionPopupVisible, setIsReactionPopupVisible] = useState(false)
   const toggleSearchDrawer = () => setIsSearchOpen((val) => !val)
   const toggleReactionPopup = () => setIsReactionPopupVisible((val) => !val)
-  const handleReactionSelected = (reaction: string) => {
-    console.log('chose reaction', reaction)
+  const handleReactionSelected = (reactionType: ReactionType) => {
+    sendReactionToServer(reactionType)
   }
-  const reactionButtonRef = useRef<HTMLButtonElement>(null)
+  const reactionButtonRef = useRef<any>(null)
 
   return (
     <Flex
@@ -50,24 +52,32 @@ export const Playbar = () => {
         color='default'
         onClick={toggleSearchDrawer}
       />
-      <ReactionPopupMenu
-        anchorRef={reactionButtonRef}
-        isVisible={isReactionPopupVisible}
-        onClose={() => {
-          toggleReactionPopup()
-        }}
-        onSelected={handleReactionSelected}
-      />
-      <IconButton
-        aria-label='toggle emote wheel'
-        size='2xl'
-        color='default'
-        icon={IconMood}
-        onClick={toggleReactionPopup}
-        ref={reactionButtonRef}
-      />
+
+      <Flex css={{ position: 'relative' }}>
+        <Box
+          css={{ position: 'absolute', top: -80, left: 30, background: 'blue' }}
+          w='20'
+          h='20'
+          ref={reactionButtonRef}
+        />
+        <IconButton
+          aria-label='toggle emote wheel'
+          size='2xl'
+          color='default'
+          icon={IconMood}
+          onClick={toggleReactionPopup}
+        />
+        <ReactionPopupMenu
+          anchorRef={reactionButtonRef}
+          isVisible={isReactionPopupVisible}
+          onClose={() => {
+            setIsReactionPopupVisible(false)
+          }}
+          onSelected={handleReactionSelected}
+        />
+      </Flex>
       <Flex flex='3'>
-        <Scrubber />
+        <AudioPlayer />
       </Flex>
       <IconButton
         aria-label='mute'

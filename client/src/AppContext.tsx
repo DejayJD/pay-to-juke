@@ -6,10 +6,16 @@ import {
   useState
 } from 'react'
 
-import { ClientQueueRequestEvent, ClientSocketMessage } from '../../types'
+import {
+  ClientQueueRequestEvent,
+  ClientSocketEvent,
+  ClientSocketMessage
+} from '../../types'
 
 import { payForPlay } from './solana_dev'
 import { TrackFull, PlayerTrackFull } from './types'
+import { ReactionType } from './Reactions'
+import { spawnReaction } from './Reactions/ReactionContainer'
 
 // Define the initial state of the context
 type AppContextState = {
@@ -22,13 +28,15 @@ type AppContextState = {
   audioPlayer: HTMLAudioElement | null
   isMuted: boolean
   addTrackToQueue: (track: TrackFull) => void
-  setCurrentTrack: (song: PlayerTrackFull) => void
+  setCurrentTrack: (song: PlayerTrackFull | null) => void
   setCurrentTrackStartTime: (time: Date | null) => void
   setQueue: (queue: PlayerTrackFull[]) => void
   setQueueHistory: (queue: PlayerTrackFull[]) => void
   setWebsocket: (ws: WebSocket) => void
   setAudioPlayer: (audioPlayer: HTMLAudioElement) => void
   setIsMuted: (isMuted: boolean) => void
+  spawnReaction: (type: ReactionType) => void
+  sendReactionToServer: (type: ReactionType) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
@@ -80,6 +88,14 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
     }
   }
 
+  const sendReactionToServer = (type: ReactionType) => {
+    const message: ClientSocketEvent = {
+      type: ClientSocketMessage.reaction,
+      reactionType: type
+    }
+    webSocketRef.current?.send(JSON.stringify(message))
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -97,7 +113,9 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         currentTrackStartTime,
         setCurrentTrackStartTime,
         isMuted,
-        setIsMuted
+        setIsMuted,
+        spawnReaction,
+        sendReactionToServer
       }}
     >
       {children}

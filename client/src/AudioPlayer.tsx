@@ -14,11 +14,16 @@ const getSeekPosition = (startTime: Date) => {
 }
 
 export const AudioPlayer = () => {
-  const { currentTrack, currentTrackStartTime, setAudioPlayer } =
-    useContext(AppContext)!
+  const {
+    currentTrack,
+    currentTrackStartTime,
+    setAudioPlayer,
+    isMuted,
+    queue,
+    setCurrentTrack
+  } = useContext(AppContext)!
   const [trackUid, setTrackUid] = useState<string | null>(null)
   const [elapsedTime, setElapsedTime] = useState(0)
-  const [isMuted, setIsMuted] = useState(true)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const setAudioRef = (el: HTMLAudioElement | null) => {
@@ -26,6 +31,7 @@ export const AudioPlayer = () => {
 
     audioRef.current = el
     setAudioPlayer(el)
+    audioRef.current.volume = 0.2
   }
 
   const handleCurrentTrackChange = useCallback(async () => {
@@ -44,16 +50,32 @@ export const AudioPlayer = () => {
   }, [currentTrack, currentTrackStartTime])
 
   useEffect(() => {
+    audioRef.current?.addEventListener('ended', () => {})
+  }, [queue.length, setCurrentTrack])
+
+  useEffect(() => {
     if (currentTrack) {
+      handleCurrentTrackChange() // Hack alert - idk why calling this super aggressively is working better but it just is
       if (trackUid !== currentTrack.uid && !isMuted) {
         console.log('EFFECT: Track Change')
         handleCurrentTrackChange()
+        audioRef.current?.play()
       }
     } else if (trackUid) {
       console.log('EFFECT: End Playback')
+      if (queue.length === 0) {
+        setCurrentTrack(null)
+      }
       audioRef.current?.pause()
     }
-  }, [currentTrack, handleCurrentTrackChange, isMuted, trackUid])
+  }, [
+    currentTrack,
+    handleCurrentTrackChange,
+    isMuted,
+    queue.length,
+    setCurrentTrack,
+    trackUid
+  ])
 
   useInterval(() => {
     if (trackUid && audioRef.current) {
@@ -63,6 +85,7 @@ export const AudioPlayer = () => {
 
   return (
     <>
+      <Scrubber elapsed={elapsedTime} />
       <audio
         ref={(ref) => setAudioRef(ref)}
         css={{ display: 'none' }}
