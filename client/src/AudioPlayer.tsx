@@ -17,22 +17,28 @@ export const AudioPlayer = () => {
     currentTrack,
     currentTrackStartTime,
     setAudioPlayer,
-    isMuted,
     queue,
-    setCurrentTrack
+    setCurrentTrack,
+    volume
   } = useContext(AppContext)!
   const [trackUid, setTrackUid] = useState<string | null>(null)
   const [elapsedTime, setElapsedTime] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const setAudioRef = (el: HTMLAudioElement | null) => {
-    if (!el) return
+    if (!el || audioRef.current) return
 
     // @ts-expect-error - just get it working
     audioRef.current = el
     setAudioPlayer(el)
     audioRef.current.volume = 0.2
   }
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
 
   const handleCurrentTrackChange = useCallback(async () => {
     if (!currentTrack || !currentTrackStartTime || !audioRef.current) return
@@ -55,11 +61,13 @@ export const AudioPlayer = () => {
 
   useEffect(() => {
     if (currentTrack) {
-      handleCurrentTrackChange() // Hack alert - idk why calling this super aggressively is working better but it just is
-      if (trackUid !== currentTrack.uid && !isMuted) {
+      if (trackUid !== currentTrack.uid) {
         console.log('EFFECT: Track Change')
         handleCurrentTrackChange()
-        audioRef.current?.play()
+        if (audioRef.current) {
+          audioRef.current.play()
+          audioRef.current.volume = 0.2
+        }
       }
     } else if (trackUid) {
       console.log('EFFECT: End Playback')
@@ -71,7 +79,6 @@ export const AudioPlayer = () => {
   }, [
     currentTrack,
     handleCurrentTrackChange,
-    isMuted,
     queue.length,
     setCurrentTrack,
     trackUid
@@ -89,7 +96,6 @@ export const AudioPlayer = () => {
       <audio
         ref={(ref) => setAudioRef(ref)}
         css={{ display: 'none' }}
-        muted={isMuted}
         autoPlay
       />
     </>

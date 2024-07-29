@@ -26,7 +26,7 @@ type AppContextState = {
   queueHistory: PlayerTrackFull[]
   websocket: WebSocket | null
   audioPlayer: HTMLAudioElement | null
-  isMuted: boolean
+  volume: number
   addTrackToQueue: (track: TrackFull) => void
   setCurrentTrack: (song: PlayerTrackFull | null) => void
   setCurrentTrackStartTime: (time: Date | null) => void
@@ -34,7 +34,7 @@ type AppContextState = {
   setQueueHistory: (queue: PlayerTrackFull[]) => void
   setWebsocket: (ws: WebSocket) => void
   setAudioPlayer: (audioPlayer: HTMLAudioElement) => void
-  setIsMuted: (isMuted: boolean) => void
+  setVolume: (volume: number) => void
   spawnReaction: (type: ReactionType) => void
   sendReactionToServer: (type: ReactionType) => void
 }
@@ -42,7 +42,7 @@ type AppContextState = {
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
-  const [isMuted, setIsMuted] = useState<boolean>(false)
+  const [volume, setVolume] = useState<boolean>(false)
   const [queue, setQueue] = useState<PlayerTrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
   const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
@@ -112,8 +112,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         setAudioPlayer,
         currentTrackStartTime,
         setCurrentTrackStartTime,
-        isMuted,
-        setIsMuted,
+        volume,
+        setVolume,
         spawnReaction,
         sendReactionToServer
       }}

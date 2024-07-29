@@ -1,12 +1,4 @@
-import {
-  Box,
-  Flex,
-  IconButton,
-  IconMood,
-  IconSearch,
-  IconVolumeLevel0,
-  IconVolumeLevel3
-} from '@audius/harmony'
+import { Box, Flex, IconButton, IconMood, IconSearch } from '@audius/harmony'
 import { Balance } from './Balance'
 import { useContext, useRef, useState } from 'react'
 import { AppContext } from './AppContext'
@@ -18,8 +10,10 @@ import { ReactionPopupMenu } from './Reactions/ReactionPopupMenu'
 import { AudioPlayer } from './AudioPlayer'
 import { ReactionType } from './Reactions'
 
+import VolumeBar from './VolumeBar'
+
 export const Playbar = () => {
-  const { isMuted, setIsMuted, sendReactionToServer } = useContext(AppContext)!
+  const { setVolume, sendReactionToServer } = useContext(AppContext)!
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isReactionPopupVisible, setIsReactionPopupVisible] = useState(false)
   const toggleSearchDrawer = () => setIsSearchOpen((val) => !val)
@@ -80,14 +74,10 @@ export const Playbar = () => {
       <Flex flex='3'>
         <AudioPlayer />
       </Flex>
-      <IconButton
-        aria-label='mute'
-        icon={isMuted ? IconVolumeLevel0 : IconVolumeLevel3}
-        size='2xl'
-        color='default'
-        onClick={() => {
-          // @ts-expect-error - just get it working
-          setIsMuted((val) => !val)
+      <VolumeBar
+        defaultValue={25}
+        onChange={(vol) => {
+          setVolume(vol * 0.5)
         }}
       />
       <Balance />
