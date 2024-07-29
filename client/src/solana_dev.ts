@@ -11,7 +11,9 @@ import { base58 } from '@scure/base'
 import { create } from 'zustand'
 
 // connection
-const connection = new Connection('http://127.0.0.1:8899')
+const connection = new Connection('https://jukeboxrpc.audius.co', {
+  wsEndpoint: 'https://jukeboxwss.audius.co'
+})
 
 // keypair
 const keypair = loadAccount()
@@ -65,6 +67,7 @@ export async function getBalance(pubkey: PublicKey) {
 // payForPlay sends 1 SOL
 // to the jukebox account...
 export async function payForPlay() {
+  // return getBalance(keypair.publicKey)
   const transaction = new Transaction()
   transaction.add(
     SystemProgram.transfer({

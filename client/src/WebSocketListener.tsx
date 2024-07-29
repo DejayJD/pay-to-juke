@@ -16,7 +16,7 @@ import { uniq } from 'lodash'
 import { spawnReaction } from './Reactions/ReactionContainer'
 import { ReactionType } from './Reactions'
 
-const LOCAL_WS_URL = 'ws://localhost:4001'
+const LOCAL_WS_URL = 'wss://jukeboxapi.audius.co'
 
 // Make the function wait until the connection is made...
 function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
