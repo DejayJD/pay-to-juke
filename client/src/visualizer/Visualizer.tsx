@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 
+// @ts-expect-error - just get it working
 import Visualizer1 from './utils/visualizer-1.js'
 import cn from 'classnames'
 

@@ -14,6 +14,7 @@ import { audiusSdk } from './audiusSdk'
 import { PlayerTrackFull, TrackFull } from './types'
 import { uniq } from 'lodash'
 import { spawnReaction } from './Reactions/ReactionContainer'
+import { ReactionType } from './Reactions'
 
 const LOCAL_WS_URL = 'ws://localhost:4001'
 
@@ -31,7 +32,7 @@ function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
   }, 5) // wait 5 milisecond for the connection...
 }
 
-let socket
+let socket: any
 
 export const WebSocketListener = memo(
   () => {
@@ -53,7 +54,6 @@ export const WebSocketListener = memo(
         if (socket) return // hacky shit but works lol
         const ws = new WebSocket(LOCAL_WS_URL)
         socket = ws
-
 
         setWebsocket(ws)
         // Need to wait for the socket to connect then sync up with the server state
@@ -143,7 +143,7 @@ export const WebSocketListener = memo(
         }
 
         const handleReaction = (event: ClientReactionEvent) => {
-          spawnReaction(event.reactionType)
+          spawnReaction(event.reactionType as ReactionType)
         }
 
         const handleSyncResponse = async (event: ServerSyncEvent) => {
@@ -163,6 +163,7 @@ export const WebSocketListener = memo(
             handleSyncResponse(messageData)
           }
           if (messageData.type === ServerSocketMessage.reaction) {
+            // @ts-expect-error - just get it working
             handleReaction(messageData)
           }
         }

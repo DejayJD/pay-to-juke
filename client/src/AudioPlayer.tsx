@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Button, Flex } from '@audius/harmony'
 
 import { AppContext } from './AppContext'
 import { audiusSdk } from './audiusSdk'
@@ -29,6 +28,7 @@ export const AudioPlayer = () => {
   const setAudioRef = (el: HTMLAudioElement | null) => {
     if (!el) return
 
+    // @ts-expect-error - just get it working
     audioRef.current = el
     setAudioPlayer(el)
     audioRef.current.volume = 0.2

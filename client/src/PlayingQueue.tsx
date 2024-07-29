@@ -1,5 +1,5 @@
 import { Avatar, Flex, Text } from '@audius/harmony'
-import { EmptyQueueTile, TrackQueueTile } from './TrackQueueTile'
+import { TrackQueueTile } from './TrackQueueTile'
 import { AppContext } from './AppContext'
 import { useContext } from 'react'
 

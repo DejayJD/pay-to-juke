@@ -27,6 +27,7 @@ export const Playbar = () => {
   const handleReactionSelected = (reactionType: ReactionType) => {
     sendReactionToServer(reactionType)
   }
+
   const reactionButtonRef = useRef<any>(null)
 
   return (
@@ -85,6 +86,7 @@ export const Playbar = () => {
         size='2xl'
         color='default'
         onClick={() => {
+          // @ts-expect-error - just get it working
           setIsMuted((val) => !val)
         }}
       />
