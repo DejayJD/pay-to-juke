@@ -4,7 +4,12 @@ import { AppContext } from './AppContext'
 import { useContext } from 'react'
 
 export const PlayingQueue = () => {
-  const { queue, queueHistory, currentTrack } = useContext(AppContext)!
+  const {
+    queue,
+    queueHistory: contextQueueHistory,
+    currentTrack
+  } = useContext(AppContext)!
+  const queueHistory = [...contextQueueHistory]
 
   if (queue.length === 0 && !currentTrack) {
     return (
