@@ -28,7 +28,11 @@ const wss = new WebSocketServer({
 })
 
 const allSockets: any[] = []
-
+const sendToAll = (eventData: string) => {
+  allSockets.forEach((socket) => {
+    socket.send(eventData)
+  })
+}
 wss.on('connection', function connection(ws) {
   allSockets.push(ws)
   // Handle playing the next track in the queue
@@ -54,8 +58,9 @@ wss.on('connection', function connection(ws) {
       queue,
       history: history
     }
-    ws.send(JSON.stringify(songStartEvent))
-    ws.send(JSON.stringify(queueChangeEvent))
+
+    sendToAll(JSON.stringify(songStartEvent))
+    sendToAll(JSON.stringify(queueChangeEvent))
 
     // Start timer to play the next track
     setTimeout(handlePlayNextTrack, currentTrack.trackDurationS * 1000)
@@ -69,7 +74,7 @@ wss.on('connection', function connection(ws) {
     const endPlaybackEvent: EndPlaybackEvent = {
       type: ServerSocketMessage.endPlayback
     }
-    ws.send(JSON.stringify(endPlaybackEvent))
+    sendToAll(JSON.stringify(endPlaybackEvent))
   }
 
   // Adds a track to the queue
@@ -99,7 +104,7 @@ wss.on('connection', function connection(ws) {
         queue,
         history: history
       }
-      ws.send(JSON.stringify(queueChangeEvent))
+      sendToAll(JSON.stringify(queueChangeEvent))
     }
   }
 
