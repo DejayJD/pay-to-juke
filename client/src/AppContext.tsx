@@ -27,7 +27,7 @@ type AppContextState = {
   websocket: WebSocket | null
   audioPlayer: HTMLAudioElement | null
   volume: number
-  addTrackToQueue: (track: TrackFull) => void
+  addTrackToQueue: (track: TrackFull) => Promise<void>
   setCurrentTrack: (song: PlayerTrackFull | null) => void
   setCurrentTrackStartTime: (time: Date | null) => void
   setQueue: (queue: PlayerTrackFull[]) => void
@@ -67,11 +67,10 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
       await payForPlay()
     } catch (e) {
       console.error('payment failed', e)
-      alert('payment failed')
-      return
+      // alert('payment failed')
+      // return
     }
 
-    // TODO: do dope web3 shit here
 
     const transactionHash = 'oawdnaiowudnaowudn127893'
     // transaction is good to go now

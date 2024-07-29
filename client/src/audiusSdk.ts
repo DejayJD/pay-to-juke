@@ -1,9 +1,6 @@
 import { sdk } from '@audius/sdk'
 
 export const audiusSdk = sdk({
-  appName: 'Audius SDK React Example'
-  // apiKey: "Your API Key goes here",
-  // apiSecret: "Your API Secret goes here",
-  // NOTE: In a real app, you should never expose your apiSecret to the client.
-  // Instead, store the apiSecret on your server and make requests using @audius/sdk server side
+  apiKey: "2bf3e07abcae002ee397b125fe56ef9aa079dac3",
+  apiSecret: "820f8d08266d09d0a4380ecc32d8e5f5fa58c6fe9301503a44d8d8b96deb22de",
 })

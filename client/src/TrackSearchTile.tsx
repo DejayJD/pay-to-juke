@@ -1,6 +1,6 @@
 import { Button, Flex, Paper, Text } from '@audius/harmony'
 import { TrackFull } from './types'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { AppContext } from './AppContext'
 import { getHrsMinsSecsText } from './utils'
 import { balanceStore } from './solana_dev'
@@ -8,13 +8,21 @@ import { balanceStore } from './solana_dev'
 type TrackSearchTileProps = { track: TrackFull }
 
 export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
+  const [status, setStatus] = useState('')
   const balance = balanceStore((s) => s.balance)
   const { addTrackToQueue } = useContext(AppContext)!
 
   const handleQueueTrack = useCallback(() => {
-    addTrackToQueue(track)
-    alert(`Track Queued - '${track.title}'`)
+    setStatus('busy')
+    addTrackToQueue(track).then(() => setStatus('added'))
   }, [addTrackToQueue, track])
+
+  let buttonText = 'Queue Song (1 SOL)'
+  if (status == 'added') {
+    buttonText = 'Added to queue!'
+  } if (status == 'busy') {
+    buttonText = 'Purchasing'
+  }
 
   return (
     <Flex gap='l' w={500}>
@@ -41,10 +49,10 @@ export const TrackSearchTile = ({ track }: TrackSearchTileProps) => {
         </Flex>
         <Button
           fullWidth
-          disabled={balance < 1.0}
+          disabled={status !== '' || balance < 1.0}
           onClick={handleQueueTrack}
         >
-          Queue Song (1 SOL)
+          {buttonText}
         </Button>
       </Flex>
     </Flex>
