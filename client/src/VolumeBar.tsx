@@ -79,7 +79,7 @@ class VolumeBar extends Component<{
 
   unmute = () => {
     const unmuteVolume = getSavedVolume(this.props.defaultValue)
-    this.volumeChange(unmuteVolume)
+    this.volumeChange(Math.max(unmuteVolume, 0.5))
   }
 
   onClick = () => {

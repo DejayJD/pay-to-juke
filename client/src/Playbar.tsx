@@ -75,7 +75,7 @@ export const Playbar = () => {
         <AudioPlayer />
       </Flex>
       <VolumeBar
-        defaultValue={25}
+        defaultValue={0.25}
         onChange={(vol) => {
           setVolume(vol * 0.5)
         }}

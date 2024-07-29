@@ -50,10 +50,11 @@ export const AudioPlayer = () => {
     setTrackUid(currentTrack.uid)
     audioRef.current.src = url
     audioRef.current.load()
+    audioRef.current.volume = volume
 
     // Set seek position
     audioRef.current.currentTime = getSeekPosition(currentTrackStartTime)
-  }, [currentTrack, currentTrackStartTime])
+  }, [currentTrack, currentTrackStartTime, volume])
 
   useEffect(() => {
     audioRef.current?.addEventListener('ended', () => {})
@@ -97,6 +98,7 @@ export const AudioPlayer = () => {
         ref={(ref) => setAudioRef(ref)}
         css={{ display: 'none' }}
         autoPlay
+        muted={false}
       />
     </>
   )
