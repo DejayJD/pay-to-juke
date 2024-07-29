@@ -42,7 +42,7 @@ type AppContextState = {
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
-  const [volume, setVolume] = useState<boolean>(false)
+  const [volume, setVolume] = useState(false)
   const [queue, setQueue] = useState<PlayerTrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
   const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
