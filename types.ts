@@ -4,7 +4,8 @@
 export enum ClientSocketMessage {
   queueAddRequest = 'queueAddRequest',
   syncRequest = 'syncRequest',
-  reaction = 'reaction'
+  reaction = 'reaction',
+  chat = 'chat'
 }
 
 export type ClientQueueRequestEvent = {
@@ -21,10 +22,17 @@ export type ClientReactionEvent = {
   reactionType: string
 }
 
+export type ClientChatEvent = {
+  type: ClientSocketMessage.chat
+  user: string
+  msg: string
+}
+
 export type ClientSocketEvent =
   | ClientQueueRequestEvent
   | ClientSyncRequestEvent
   | ClientReactionEvent
+  | ClientChatEvent
 
 /**
  * Stuff the server can send to the client
@@ -43,7 +51,8 @@ export enum ServerSocketMessage {
   songStart = 'songStart',
   endPlayback = 'endPlayback',
   sync = 'sync',
-  reaction = 'reaction'
+  reaction = 'reaction',
+  chat = 'chat'
 }
 
 export type QueueChangeEvent = {
@@ -73,9 +82,16 @@ export type ServerReactionEvent = {
   reactionType: string
 }
 
+export type ServerChatEvent = {
+  type: ServerSocketMessage.chat
+  user: string
+  msg: string
+}
+
 export type ServerSocketEvent =
   | QueueChangeEvent
   | SongStartEvent
   | EndPlaybackEvent
   | ServerSyncEvent
   | ServerReactionEvent
+  | ServerChatEvent

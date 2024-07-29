@@ -15,6 +15,7 @@ import { PlayingQueue } from './PlayingQueue'
 import { ReactionContainer } from './Reactions/ReactionContainer'
 import { memo, useState } from 'react'
 import { FullQueue } from './FullQueue'
+import { Chat } from './Chat'
 
 const App = memo(
   () => {
@@ -47,6 +48,7 @@ const App = memo(
           <Playbar />
           <PlayingQueue />
           <ReactionContainer />
+          <Chat />
           <FullQueue />
         </AppContextProvider>
       </HarmonyThemeProvider>

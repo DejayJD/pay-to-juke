@@ -10,7 +10,8 @@ import {
   QueuedTrackData,
   ServerSyncEvent,
   EndPlaybackEvent,
-  ClientReactionEvent
+  ClientReactionEvent,
+  ClientChatEvent
 } from '../../types'
 import { uuid } from './uuid'
 
@@ -35,6 +36,7 @@ const sendToAll = (eventData: string) => {
 }
 wss.on('connection', function connection(ws) {
   allSockets.push(ws)
+
   // Handle playing the next track in the queue
   const handlePlayNextTrack = () => {
     // If there is a current track, push into history
@@ -119,9 +121,11 @@ wss.on('connection', function connection(ws) {
   }
 
   const handleReaction = (reactionEvent: ClientReactionEvent) => {
-    allSockets.forEach((socket) => {
-      socket.send(JSON.stringify(reactionEvent))
-    })
+    sendToAll(JSON.stringify(reactionEvent))
+  }
+
+  const handleChat = (chatEvent: ClientChatEvent) => {
+    sendToAll(JSON.stringify(chatEvent))
   }
 
   ws.on('message', function message(message: any) {
@@ -135,6 +139,9 @@ wss.on('connection', function connection(ws) {
     }
     if (data.type === ClientSocketMessage.reaction) {
       handleReaction(data)
+    }
+    if (data.type === ClientSocketMessage.chat) {
+      handleChat(data)
     }
   })
 

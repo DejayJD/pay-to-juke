@@ -1,6 +1,7 @@
 import { memo, useContext, useEffect, useRef } from 'react'
 import { AppContext } from './AppContext'
 import {
+    ClientChatEvent,
   ClientReactionEvent,
   ClientSocketMessage,
   ClientSyncRequestEvent,
@@ -38,6 +39,7 @@ export const WebSocketListener = memo(
   () => {
     const trackCacheRef = useRef<Map<string, TrackFull>>(new Map())
     const {
+      addChat,
       setQueue,
       setQueueHistory,
       setCurrentTrack,
@@ -146,6 +148,10 @@ export const WebSocketListener = memo(
           spawnReaction(event.reactionType as ReactionType)
         }
 
+        const handleChat = (event: ClientChatEvent) => {
+          addChat(event.msg, event.user)
+        }
+
         const handleSyncResponse = async (event: ServerSyncEvent) => {
           handleQueueChange(event)
           handleSongStart(event)
@@ -165,6 +171,10 @@ export const WebSocketListener = memo(
           if (messageData.type === ServerSocketMessage.reaction) {
             // @ts-expect-error - just get it working
             handleReaction(messageData)
+          }
+          if (messageData.type === ServerSocketMessage.chat) {
+            // @ts-expect-error - just get it working
+            handleChat(messageData)
           }
         }
 

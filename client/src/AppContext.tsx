@@ -17,6 +17,11 @@ import { TrackFull, PlayerTrackFull } from './types'
 import { ReactionType } from './Reactions'
 import { spawnReaction } from './Reactions/ReactionContainer'
 
+type Chat = {
+  user: string
+  msg: string
+}
+
 // Define the initial state of the context
 type AppContextState = {
   // Add your state properties here
@@ -24,10 +29,12 @@ type AppContextState = {
   currentTrackStartTime: Date | null
   queue: PlayerTrackFull[]
   queueHistory: PlayerTrackFull[]
+  chatHistory: Chat[]
   websocket: WebSocket | null
   audioPlayer: HTMLAudioElement | null
   volume: number
   addTrackToQueue: (track: TrackFull) => Promise<void>
+  addChat: (msg: string, user: string) => void
   setCurrentTrack: (song: PlayerTrackFull | null) => void
   setCurrentTrackStartTime: (time: Date | null) => void
   setQueue: (queue: PlayerTrackFull[]) => void
@@ -37,6 +44,7 @@ type AppContextState = {
   setVolume: (volume: number) => void
   spawnReaction: (type: ReactionType) => void
   sendReactionToServer: (type: ReactionType) => void
+  sendChatToServer: (chat: Chat) => void
 }
 
 export const AppContext = createContext<AppContextState | undefined>(undefined)
@@ -45,6 +53,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
   const [volume, setVolume] = useState(0.2)
   const [queue, setQueue] = useState<PlayerTrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
+  const [chatHistory, setChatHistory] = useState<Chat[]>([])
   const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
   const [currentTrackStartTime, setCurrentTrackStartTime] =
     useState<Date | null>(null)
@@ -94,6 +103,19 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
     webSocketRef.current?.send(JSON.stringify(message))
   }
 
+  const addChat = (msg: string, user: string) => {
+    setChatHistory(history => [...history, { user, msg }])
+  }
+
+  const sendChatToServer = ({ user, msg }: Chat) => {
+    const message: ClientSocketEvent = {
+      type: ClientSocketMessage.chat,
+      user,
+      msg
+    }
+    webSocketRef.current?.send(JSON.stringify(message))
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -101,6 +123,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         setQueue,
         queueHistory,
         setQueueHistory,
+        chatHistory,
+        addChat,
         websocket: webSocketRef?.current,
         setWebsocket,
         addTrackToQueue,
@@ -113,7 +137,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
         volume,
         setVolume,
         spawnReaction,
-        sendReactionToServer
+        sendReactionToServer,
+        sendChatToServer
       }}
     >
       {children}
