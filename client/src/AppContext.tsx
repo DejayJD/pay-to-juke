@@ -42,7 +42,7 @@ type AppContextState = {
 export const AppContext = createContext<AppContextState | undefined>(undefined)
 
 export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
-  const [volume, setVolume] = useState(false)
+  const [volume, setVolume] = useState(0.2)
   const [queue, setQueue] = useState<PlayerTrackFull[]>([])
   const [queueHistory, setQueueHistory] = useState<PlayerTrackFull[]>([])
   const [currentTrack, setCurrentTrack] = useState<PlayerTrackFull | null>(null)
@@ -70,7 +70,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren<any>) => {
       // alert('payment failed')
       // return
     }
-
 
     const transactionHash = 'oawdnaiowudnaowudn127893'
     // transaction is good to go now

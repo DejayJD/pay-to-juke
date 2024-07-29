@@ -54,6 +54,7 @@ export const AudioPlayer = () => {
 
     // Set seek position
     audioRef.current.currentTime = getSeekPosition(currentTrackStartTime)
+    audioRef.current.play()
   }, [currentTrack, currentTrackStartTime, volume])
 
   useEffect(() => {
@@ -65,10 +66,6 @@ export const AudioPlayer = () => {
       if (trackUid !== currentTrack.uid) {
         console.log('EFFECT: Track Change')
         handleCurrentTrackChange()
-        if (audioRef.current) {
-          audioRef.current.play()
-          audioRef.current.volume = 0.2
-        }
       }
     } else if (trackUid) {
       console.log('EFFECT: End Playback')
