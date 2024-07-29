@@ -14,14 +14,14 @@ export const FullQueue = () => {
       pb='l'
       css={{
         position: 'fixed',
-        transform: 'translateY(-50%)',
-        top: '50%',
         right: 0,
-        maxHeight: '50vh',
+        bottom: 80,
+        maxHeight: 400,
+        maxWidth: 500
       }}
     >
-      <Flex pv='m' direction='column'>
-        <Text  variant='heading' size='l' color='default'>~ QUEUE ~</Text>
+      <Flex pv='m' direction='column' gap='s'>
+        <Text textAlign='center' variant='heading' size='l' color='default'>~ QUEUE ~</Text>
         <Divider />
       </Flex>
       <Flex direction='column' gap='m' css={{ overflow: 'auto' }}>
