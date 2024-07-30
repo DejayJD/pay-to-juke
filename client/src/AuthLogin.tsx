@@ -34,7 +34,7 @@ export const AuthLogin = ({ onLogin }: AuthLoginProps) => {
       })
     }
   }, [onLogin, setUser])
-  return localstorageUser || true ? (
+  return localstorageUser ? (
     <Button
       onClick={() => {
         setUser(localstorageUser)
