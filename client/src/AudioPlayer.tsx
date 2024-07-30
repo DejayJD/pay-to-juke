@@ -19,7 +19,8 @@ export const AudioPlayer = () => {
     setAudioPlayer,
     queue,
     setCurrentTrack,
-    volume
+    volume,
+    setCurrentRequester
   } = useContext(AppContext)!
   const [trackUid, setTrackUid] = useState<string | null>(null)
   const [elapsedTime, setElapsedTime] = useState(0)
@@ -71,6 +72,7 @@ export const AudioPlayer = () => {
       console.log('EFFECT: End Playback')
       if (queue.length === 0) {
         setCurrentTrack(null)
+        setCurrentRequester(null)
       }
       audioRef.current?.pause()
     }
@@ -78,6 +80,7 @@ export const AudioPlayer = () => {
     currentTrack,
     handleCurrentTrackChange,
     queue.length,
+    setCurrentRequester,
     setCurrentTrack,
     trackUid
   ])

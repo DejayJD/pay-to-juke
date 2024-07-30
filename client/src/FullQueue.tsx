@@ -21,12 +21,17 @@ export const FullQueue = () => {
       }}
     >
       <Flex pv='m' direction='column' gap='s'>
-        <Text textAlign='center' variant='heading' size='l' color='default'>~ QUEUE ~</Text>
+        <Text textAlign='center' variant='heading' size='l' color='default'>
+          QUEUE
+        </Text>
         <Divider />
       </Flex>
       <Flex direction='column' gap='m' css={{ overflow: 'auto' }}>
-        {queue.map((item, idx) => (
-          <Text variant='title' color='default'>{idx+ 1}. {item.title}</Text>
+        {queue.map(({ track, requester }, idx) => (
+          <Text variant='title' color='default'>
+            {idx + 1}. @{track?.user?.handle} - {track.title} - @
+            {requester?.handle}
+          </Text>
         ))}
       </Flex>
     </Paper>

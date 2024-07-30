@@ -1,3 +1,5 @@
+type User = any // no sdk types here lol
+
 /**
  * Stuff the client can send to the server
  */
@@ -5,7 +7,8 @@ export enum ClientSocketMessage {
   queueAddRequest = 'queueAddRequest',
   syncRequest = 'syncRequest',
   reaction = 'reaction',
-  chat = 'chat'
+  chat = 'chat',
+  disconnect = 'disconnect'
 }
 
 export type ClientQueueRequestEvent = {
@@ -13,9 +16,13 @@ export type ClientQueueRequestEvent = {
   hash: string
   trackId: string
   trackDurationS: number
+  user: User
 }
 
-export type ClientSyncRequestEvent = { type: ClientSocketMessage.syncRequest }
+export type ClientSyncRequestEvent = {
+  type: ClientSocketMessage.syncRequest
+  user: User
+}
 
 export type ClientReactionEvent = {
   type: ClientSocketMessage.reaction
@@ -28,11 +35,17 @@ export type ClientChatEvent = {
   msg: string
 }
 
+export type ClientDisconnectEvent = {
+  type: ClientSocketMessage.disconnect
+  user: User
+}
+
 export type ClientSocketEvent =
   | ClientQueueRequestEvent
   | ClientSyncRequestEvent
   | ClientReactionEvent
   | ClientChatEvent
+  | ClientDisconnectEvent
 
 /**
  * Stuff the server can send to the client
@@ -44,6 +57,7 @@ export type QueuedTrackData = {
   startTime: Date | null
   trackDurationS: number
   uuid: string
+  requester: User
 }
 
 export enum ServerSocketMessage {
@@ -52,7 +66,8 @@ export enum ServerSocketMessage {
   endPlayback = 'endPlayback',
   sync = 'sync',
   reaction = 'reaction',
-  chat = 'chat'
+  chat = 'chat',
+  listenerChange = 'listenerChange'
 }
 
 export type QueueChangeEvent = {
@@ -88,6 +103,11 @@ export type ServerChatEvent = {
   msg: string
 }
 
+export type ServerListenerChangeEvent = {
+  type: ServerSocketMessage.listenerChange
+  listeners: User[]
+}
+
 export type ServerSocketEvent =
   | QueueChangeEvent
   | SongStartEvent
@@ -95,3 +115,4 @@ export type ServerSocketEvent =
   | ServerSyncEvent
   | ServerReactionEvent
   | ServerChatEvent
+  | ServerListenerChangeEvent

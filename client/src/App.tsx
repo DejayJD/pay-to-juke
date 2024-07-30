@@ -1,9 +1,4 @@
-import {
-  Button,
-  Flex,
-  ThemeProvider as HarmonyThemeProvider,
-  IconVolumeLevel3
-} from '@audius/harmony'
+import { Flex, ThemeProvider as HarmonyThemeProvider } from '@audius/harmony'
 
 import { AppContextProvider } from './AppContext'
 import { WebSocketListener } from './WebSocketListener'
@@ -16,40 +11,46 @@ import { ReactionContainer } from './Reactions/ReactionContainer'
 import { memo, useState } from 'react'
 import { FullQueue } from './FullQueue'
 import { Chat } from './Chat'
+import { AuthLogin } from './AuthLogin'
 
 const App = memo(
   () => {
-    const [showApp, setShowApp] = useState(false)
-    if (!showApp) {
+    const [pastAuth, setPastAuth] = useState(false)
+
+    const authRender = () => {
       return (
-        <HarmonyThemeProvider theme='dark'>
-          <Flex
-            w='100%'
-            h='100%'
-            alignItems='center'
-            justifyContent='center'
-            css={{ position: 'absolute' }}
-          >
-            <Button
-              iconRight={IconVolumeLevel3}
-              onClick={() => setShowApp(true)}
-            >
-              Start listening
-            </Button>
-          </Flex>
-        </HarmonyThemeProvider>
+        <Flex
+          w='100%'
+          h='100%'
+          alignItems='center'
+          justifyContent='center'
+          css={{ position: 'absolute' }}
+        >
+          <AuthLogin
+            onLogin={() => {
+              setPastAuth(true)
+            }}
+          />
+        </Flex>
       )
     }
+
     return (
       <HarmonyThemeProvider theme='dark'>
         <AppContextProvider>
-          <WebSocketListener />
-          <Visualizer />
-          <Playbar />
-          <PlayingQueue />
-          <ReactionContainer />
-          <Chat />
-          <FullQueue />
+          {!pastAuth ? (
+            authRender()
+          ) : (
+            <>
+              <WebSocketListener />
+              <Visualizer />
+              <Playbar />
+              <PlayingQueue />
+              <ReactionContainer />
+              <Chat />
+              <FullQueue />
+            </>
+          )}
         </AppContextProvider>
       </HarmonyThemeProvider>
     )

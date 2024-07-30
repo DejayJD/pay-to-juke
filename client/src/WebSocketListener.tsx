@@ -1,7 +1,8 @@
 import { memo, useContext, useEffect, useRef } from 'react'
 import { AppContext } from './AppContext'
 import {
-    ClientChatEvent,
+  ClientChatEvent,
+  ClientDisconnectEvent,
   ClientReactionEvent,
   ClientSocketMessage,
   ClientSyncRequestEvent,
@@ -16,8 +17,11 @@ import { PlayerTrackFull, TrackFull } from './types'
 import { uniq } from 'lodash'
 import { spawnReaction } from './Reactions/ReactionContainer'
 import { ReactionType } from './Reactions'
+import { User } from '@audius/sdk'
 
-const LOCAL_WS_URL = 'wss://jukeboxapi.audius.co'
+const LOCAL_WS_URL = 'ws://localhost:4001'
+const SERVER_WS_URL = 'wss://jukeboxapi.audius.co'
+const WS_URL = SERVER_WS_URL // swap this out to change to local dev
 
 // Make the function wait until the connection is made...
 function waitForFirstSocketConnection(socket: WebSocket, callback: () => void) {
@@ -45,7 +49,10 @@ export const WebSocketListener = memo(
       setCurrentTrack,
       setCurrentTrackStartTime,
       websocket,
-      setWebsocket
+      setWebsocket,
+      user,
+      setListeners,
+      setCurrentRequester
     } = useContext(AppContext)!
 
     // initialize the websocket connection and our queue listeners
@@ -54,14 +61,15 @@ export const WebSocketListener = memo(
         // need this so we dont react to rerenders
         if (websocket) return
         if (socket) return // hacky shit but works lol
-        const ws = new WebSocket(LOCAL_WS_URL)
+        const ws = new WebSocket(WS_URL)
         socket = ws
 
         setWebsocket(ws)
         // Need to wait for the socket to connect then sync up with the server state
         waitForFirstSocketConnection(ws, () => {
           const initialSyncRequest: ClientSyncRequestEvent = {
-            type: ClientSocketMessage.syncRequest
+            type: ClientSocketMessage.syncRequest,
+            user
           }
           ws.send(JSON.stringify(initialSyncRequest))
         })
@@ -104,14 +112,20 @@ export const WebSocketListener = memo(
             const track =
               trackCacheRef.current.get(queuedTrack.trackId) ??
               trackData.find((track) => track.id === queuedTrack.trackId)
-            return { ...track, uid: queuedTrack.uuid } as PlayerTrackFull
+            return {
+              track: { ...track, uid: queuedTrack.uuid } as PlayerTrackFull,
+              requester: queuedTrack.requester
+            }
           })
 
           const clientHistoryData = history.map((queuedTrack) => {
             const track =
               trackCacheRef.current.get(queuedTrack.trackId) ??
               trackData.find((track) => track.id === queuedTrack.trackId)
-            return { ...track, uid: queuedTrack.uuid } as PlayerTrackFull
+            return {
+              track: { ...track, uid: queuedTrack.uuid } as PlayerTrackFull,
+              requester: queuedTrack.requester
+            }
           })
 
           setQueue(clientQueueData)
@@ -123,7 +137,9 @@ export const WebSocketListener = memo(
         }: SongStartEvent | ServerSyncEvent) => {
           console.log('SONG START EVENT', { currentTrack })
           if (currentTrack) {
-            const { trackId, startTime, uuid } = currentTrack
+            const { trackId, startTime, uuid, requester } = currentTrack
+
+            setCurrentRequester(requester)
             if (trackCacheRef.current.has(trackId)) {
               setCurrentTrackStartTime(startTime)
               setCurrentTrack({
@@ -176,6 +192,10 @@ export const WebSocketListener = memo(
             // @ts-expect-error - just get it working
             handleChat(messageData)
           }
+          if (messageData.type === ServerSocketMessage.listenerChange) {
+            console.log(messageData)
+            setListeners(messageData.listeners as User[])
+          }
         }
 
         ws.onmessage = socketMessageHandler
@@ -189,6 +209,20 @@ export const WebSocketListener = memo(
         // setCurrentTrackStartTime
       ]
     )
+
+    useEffect(() => {
+      function disconnectServer() {
+        const disconnectEvent: ClientDisconnectEvent = {
+          type: ClientSocketMessage.disconnect,
+          user
+        }
+        socket.send(JSON.stringify(disconnectEvent))
+      }
+      window.onbeforeunload = function () {
+        disconnectServer()
+      }
+      window.addEventListener('beforeunload', disconnectServer)
+    }, [user])
 
     return null
   },

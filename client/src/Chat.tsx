@@ -1,18 +1,24 @@
-import { useCallback, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from './AppContext'
-import { Button, Divider, Flex, Paper, Text, TextInput, TextInputSize } from '@audius/harmony'
+import {
+  Divider,
+  Flex,
+  IconMessage,
+  Paper,
+  Text,
+  TextInput,
+  TextInputSize
+} from '@audius/harmony'
 
 export const Chat = () => {
   const { chatHistory, sendChatToServer } = useContext(AppContext)!
-  const [user, setUser] = useState('')
   const [msg, setMsg] = useState('')
 
-  const handleSubmit = useCallback(() => {
-    if (!user || !msg) return
-    console.log({ user, msg })
-    sendChatToServer({ user, msg })
+  const handleSubmit = () => {
+    if (!msg) return
+    sendChatToServer(msg)
     setMsg('')
-  }, [msg, sendChatToServer, user])
+  }
 
   return (
     <Paper
@@ -23,32 +29,52 @@ export const Chat = () => {
         position: 'fixed',
         left: 0,
         bottom: 80,
-        maxHeight: 400,
-        maxWidth: 500
+        height: 'calc(100% - 280px)',
+        width: 300
       }}
+      justifyContent='space-between'
     >
       <Flex pv='m' direction='column' gap='s'>
-        <Text textAlign='center' variant='heading' size='l' color='default'>~ CHAT ~</Text>
+        <Text textAlign='center' variant='heading' size='l' color='default'>
+          CHAT
+        </Text>
         <Divider />
       </Flex>
-      <Flex direction='column' gap='m' css={{ minHeight: 48, maxHeight: 300, overflow: 'auto' }}>
+      <Flex
+        direction='column'
+        gap='m'
+        justifyContent='flex-start'
+        h='100%'
+      >
         {chatHistory.map((item) => (
-          <Text variant='body' color='default'>{item.user}: {item.msg}</Text>
+          <Text variant='body' color='default'>
+            {item.user}: {item.msg}
+          </Text>
         ))}
       </Flex>
       <Flex direction='column' gap='s'>
-      <Divider />
-      <Flex gap='s' alignItems='center'>
-        <TextInput size={TextInputSize.SMALL} css={{ maxWidth: 100 }} label='user' placeholder='Username' onChange={(e) => {
-          const input = e.currentTarget
-          setUser(input.value)
-        }} />
-        <TextInput size={TextInputSize.SMALL} label='msg' placeholder='Chat here' onChange={(e) => {
-          const input = e.currentTarget
-          setMsg(input.value)
-        }} />
-        <Button size='small' onClick={handleSubmit}>Submit</Button>
-      </Flex>
+        <Divider />
+        <Flex gap='s' alignItems='center'>
+          <form
+            onSubmit={(e) => {
+              handleSubmit()
+              e.preventDefault()
+            }}
+            style={{ display: 'flex', width: '100%' }}
+          >
+            <TextInput
+              size={TextInputSize.SMALL}
+              label='msg'
+              placeholder=''
+              onChange={(e) => {
+                const input = e.currentTarget
+                setMsg(input.value)
+              }}
+              value={msg}
+              endIcon={IconMessage}
+            />
+          </form>
+        </Flex>
       </Flex>
     </Paper>
   )

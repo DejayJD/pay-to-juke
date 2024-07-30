@@ -11,7 +11,9 @@ import {
   ServerSyncEvent,
   EndPlaybackEvent,
   ClientReactionEvent,
-  ClientChatEvent
+  ClientChatEvent,
+  ClientSyncRequestEvent,
+  ServerListenerChangeEvent
 } from '../../types'
 import { uuid } from './uuid'
 
@@ -28,14 +30,15 @@ const wss = new WebSocketServer({
   port: WS_PORT
 })
 
-const allSockets: any[] = []
+const currentListeners: any[] = []
 const sendToAll = (eventData: string) => {
-  allSockets.forEach((socket) => {
+  currentListeners.forEach(({ socket }) => {
     socket.send(eventData)
   })
 }
 wss.on('connection', function connection(ws) {
-  allSockets.push(ws)
+  const socketIndex = currentListeners.length
+  currentListeners.push({ socket: ws })
 
   // Handle playing the next track in the queue
   const handlePlayNextTrack = () => {
@@ -83,7 +86,8 @@ wss.on('connection', function connection(ws) {
   const handleQueueAdd = ({
     hash,
     trackId,
-    trackDurationS
+    trackDurationS,
+    user
   }: ClientQueueRequestEvent) => {
     // TODO: do web 3 shit - verify hash here
 
@@ -93,7 +97,8 @@ wss.on('connection', function connection(ws) {
       trackId,
       trackDurationS,
       startTime: null,
-      uuid: newUuid
+      uuid: newUuid,
+      requester: user
     }
     queue.push(newTrack)
 
@@ -110,7 +115,8 @@ wss.on('connection', function connection(ws) {
     }
   }
 
-  const handleSyncRequest = () => {
+  const handleSyncRequest = ({ user }: ClientSyncRequestEvent) => {
+    currentListeners[socketIndex].user = user
     const syncEventData: ServerSyncEvent = {
       type: ServerSocketMessage.sync,
       queue,
@@ -118,6 +124,15 @@ wss.on('connection', function connection(ws) {
       currentTrack
     }
     ws.send(JSON.stringify(syncEventData))
+    handleListenerChange()
+  }
+
+  const handleListenerChange = () => {
+    const listenerChangeEvent: ServerListenerChangeEvent = {
+      type: ServerSocketMessage.listenerChange,
+      listeners: currentListeners.map((l) => l.user)
+    }
+    ws.send(JSON.stringify(listenerChangeEvent))
   }
 
   const handleReaction = (reactionEvent: ClientReactionEvent) => {
@@ -128,6 +143,12 @@ wss.on('connection', function connection(ws) {
     sendToAll(JSON.stringify(chatEvent))
   }
 
+  const handleDisconnect = () => {
+    // remove the user from the array
+    currentListeners.splice(socketIndex, 1)
+    handleListenerChange()
+  }
+
   ws.on('message', function message(message: any) {
     const data: ClientSocketEvent = JSON.parse(message)
     console.log('received message! type:', data.type)
@@ -135,13 +156,16 @@ wss.on('connection', function connection(ws) {
       handleQueueAdd(data)
     }
     if (data.type === ClientSocketMessage.syncRequest) {
-      handleSyncRequest()
+      handleSyncRequest(data)
     }
     if (data.type === ClientSocketMessage.reaction) {
       handleReaction(data)
     }
     if (data.type === ClientSocketMessage.chat) {
       handleChat(data)
+    }
+    if (data.type === ClientSocketMessage.disconnect) {
+      handleDisconnect()
     }
   })
 

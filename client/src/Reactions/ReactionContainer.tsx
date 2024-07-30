@@ -5,11 +5,11 @@ import ReactDOM from 'react-dom'
 import animationStyles from './ReactionAnimation.module.css'
 
 function uuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 export const spawnReaction = (type: ReactionType) => {
@@ -17,7 +17,7 @@ export const spawnReaction = (type: ReactionType) => {
   if (!reactionOutlet) return
 
   const ReactionComponent = reactionMap[type]
-  
+
   const newId = uuid()
   const newDiv = document.createElement('div')
   newDiv.setAttribute('id', newId)
@@ -26,7 +26,7 @@ export const spawnReaction = (type: ReactionType) => {
   ReactDOM.render(
     <div
       className={animationStyles.floatUp}
-      style={{ marginLeft: Math.random() * 300 }}
+      style={{ marginLeft: Math.random() * 150 }}
     >
       <ReactionComponent />
     </div>,
@@ -40,14 +40,14 @@ export const spawnReaction = (type: ReactionType) => {
 export const ReactionContainer = () => {
   return (
     <Flex
-      w='350px'
-      h='400px'
+      w='180px'
+      h='280px'
       alignItems='flex-end'
       css={{
         position: 'absolute',
-        left: '53%',
+        left: '52%',
         top: '200px',
-        transform: 'translateX(-50%)',
+        transform: 'translateX(-50%)'
       }}
       id='reaction-outlet'
     />

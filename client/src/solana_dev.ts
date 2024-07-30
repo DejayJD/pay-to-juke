@@ -10,10 +10,14 @@ import {
 import { base58 } from '@scure/base'
 import { create } from 'zustand'
 
-// connection
+// server connection mode
 const connection = new Connection('https://jukeboxrpc.audius.co', {
   wsEndpoint: 'https://jukeboxwss.audius.co'
 })
+
+
+// uncomment for local dev mode
+// const connection = new Connection('http://127.0.0.1:8899')
 
 // keypair
 const keypair = loadAccount()
